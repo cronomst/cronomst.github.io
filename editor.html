@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>Loot &amp; Labyrinths</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+        cursor: crosshair;
+      }
+
+      #toolbar div {
+        float: left;
+        width: 64px;
+        height: 64px;
+        border: 1px solid black;
+        cursor: pointer;
+      }
+      #toolbar + div {
+        clear: left;
+      }
+      div#tool_0 {
+        background: black;
+      }
+      div#tool_1 {
+        background: white;
+      }
+      div#tool_2 {
+        background: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="map-canvas" width="576" height="576"></canvas>
+    <div id="toolbar">
+        <div id="tool_0"></div>
+        <div id="tool_1"></div>
+        <div id="tool_2"></div>
+    </div>
+    <div id="code"></div>
+    <div>
+        <button id="toggle_walls">Toggle Walls</button>
+    </div>
+  </body>
+  <script src="map.js"></script>
+  <script src="validator.js"></script>
+  <script src="main.js"></script>
+</html>
