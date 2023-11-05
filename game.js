@@ -13,6 +13,7 @@ let Game = function() {
 
         this.puzzle = new Puzzle();
         this.puzzle.clear();
+        this.puzzle.decodePuzzle('C24343631.R45061325.M1720416067.T36.');
 
         window.addEventListener('resize', () => {
             this.resize();
@@ -28,11 +29,78 @@ let Game = function() {
     };
 
     this.render = function() {
-        ctx.fillRect(TILE_SIZE, TILE_SIZE, TILE_SIZE, TILE_SIZE);
-        ctx.fillRect(TILE_SIZE*(INIT_SIZE-2), TILE_SIZE, TILE_SIZE, TILE_SIZE);
-        ctx.fillRect(TILE_SIZE, TILE_SIZE*(INIT_SIZE-2), TILE_SIZE, TILE_SIZE);
-        ctx.fillRect(TILE_SIZE*(INIT_SIZE-2), TILE_SIZE*(INIT_SIZE-2), TILE_SIZE, TILE_SIZE);
-    }
+        ctx.fillStyle = "rgb(255,255,255)";
+        ctx.fillRect(0,0,ctx.canvas.width, ctx.canvas.height);
+    
+        if (this.puzzle != null) {
+            this._drawColAndRowHints();
+            ctx.translate(TILE_SIZE, TILE_SIZE);
+            this._drawMap();
+            this._drawDeadEnds();
+            ctx.setTransform();
+        }
+    };
+
+    this._drawColAndRowHints = function() {
+        const BPADDING = TILE_SIZE/6;
+        const LPADDING = TILE_SIZE/4;
+        ctx.font = TILE_SIZE + "px Monospace";
+        ctx.fillStyle = "rgb(0,0,0)";
+        var cols = this.puzzle.colHints;
+        var rows = this.puzzle.rowHints;
+        
+        cols.forEach((val) => {
+            ctx.translate(TILE_SIZE, 0);
+            ctx.fillText(val, LPADDING, TILE_SIZE - BPADDING);
+        });
+        ctx.setTransform();
+        rows.forEach((val) => {
+            ctx.translate(0, TILE_SIZE);
+            ctx.fillText(val, LPADDING, TILE_SIZE - BPADDING);
+        });
+        ctx.setTransform();
+    };
+
+    this._drawMap = function() {
+        for (let x=0; x<this.puzzle.width; x++) {
+            for (let y=0; y<this.puzzle.height; y++) {
+                let tile = this.puzzle.getTile(x,y);
+                let style = "rgb(0,0,0)";
+                let tf = ctx.getTransform();
+                if (tile == 0) {
+                    style = "rgb(255,255,255)";
+                } else if (tile == 1) {
+                    style = "rgb(255,255,255)";
+                } else if (tile == 2) {
+                    style = "rgb(255,255,0)";
+                }
+                ctx.fillStyle = style;
+                ctx.translate(x*TILE_SIZE, y*TILE_SIZE);
+                ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE);
+                // Draw grid
+                ctx.beginPath();
+                ctx.strokeStyle="rgb(128,128,128)";
+                ctx.rect(0, 0, TILE_SIZE, TILE_SIZE);
+                ctx.stroke();
+                ctx.setTransform(tf);
+            }
+        }
+    };
+
+    this._drawDeadEnds = function() {
+        let deadEnds = this.puzzle.deadEnds;
+        for (var i=0; i<deadEnds.length; i+=2) {
+            ctx.fillStyle = "rgb(255,0,0)";
+            var x = deadEnds[i];
+            var y = deadEnds[i+1];
+            var tf = ctx.getTransform();
+            ctx.beginPath();
+            ctx.translate(x*TILE_SIZE + TILE_SIZE/2, y*TILE_SIZE + TILE_SIZE/2);
+            ctx.arc(0,  0, TILE_SIZE/2, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.setTransform(tf);
+        }
+    };
 
     this.resize = function() {
         nWidth = TILE_SIZE * INIT_SIZE
