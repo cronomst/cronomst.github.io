@@ -130,11 +130,12 @@ let App = function() {
     }
 
     this.decode = function(mapCode) {
-        this.map.decode(mapCode)
+        this.map.decodeSolution(mapCode)
     };
 
     this.encode = function() {
-        document.getElementById("code").innerHTML = "<p>" +  this.map.encode() + "</p>";
+        document.getElementById("code").innerHTML = "<p>" +  this.map.encodeSolution() + "</p>" +
+                "<p>" +  this.map.encodePuzzle() + "</p>";
     };
 
     this.validate = function() {

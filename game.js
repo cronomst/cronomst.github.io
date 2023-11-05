@@ -5,10 +5,14 @@ let Game = function() {
 
     this.currentWidth = 1;
     this.currentHeight = 1;
+    this.puzzle = null;
 
     this.init = function() {
         ctx.canvas.width = TILE_SIZE * INIT_SIZE;
         ctx.canvas.height = TILE_SIZE * INIT_SIZE;
+
+        this.puzzle = new Puzzle();
+        this.puzzle.clear();
 
         window.addEventListener('resize', () => {
             this.resize();

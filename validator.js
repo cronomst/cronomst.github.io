@@ -33,16 +33,16 @@ let Validator = function() {
         return -1;
     };
 
+    /**
+     * Create a copy of the map's tile array containing only walls and empty tiles
+     * to be used for validation. Treasures are treated as empty for the purpose
+     * of the flood fill test.
+     * 
+     * @param {Map} map 
+     * @returns Array
+     */
     this.createValidationCopy = function(map) {
-        let mapCopy = [];
-        for (var i=0; i<map.tiles.length; i++) {
-            if (map.tiles[i] == WALL) {
-                mapCopy.push(0);
-            } else {
-                mapCopy.push(1);
-            }
-        }
-        return mapCopy;
+        return map.tiles.map((tile) => tile == WALL ? WALL : EMPTY);
     };
 
     /**
