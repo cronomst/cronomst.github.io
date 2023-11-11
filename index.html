@@ -12,10 +12,15 @@
         cursor: crosshair;
         image-rendering: pixelated;
       }
+      .resource {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <canvas id="map-canvas"></canvas>
+    <img src="images/tiles.png" class="resource" id="img_tiles"/>
+    <img src="images/wallmap.png" class="resource" id="img_wallmap"/>
   </body>
   <script src="map.js"></script>
   <script src="puzzle.js"></script>

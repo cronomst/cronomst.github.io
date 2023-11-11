@@ -7,6 +7,8 @@ let Game = function() {
     this.currentHeight = 1;
     this.puzzle = null;
 
+    this.selectedTool = 0;
+
     this.init = function() {
         ctx.canvas.width = TILE_SIZE * INIT_SIZE;
         ctx.canvas.height = TILE_SIZE * INIT_SIZE;
@@ -21,12 +23,60 @@ let Game = function() {
         });
 
         document.getElementById('map-canvas').addEventListener('mousedown', (e) => {
-            var ratio = INIT_SIZE / this.currentWidth; // TODO: Only works when map width = height
-            var x = Math.floor(e.offsetX * ratio);
-            var y = Math.floor(e.offsetY * ratio);
-            console.log(`[${x}, ${y}], [${e.offsetX}, ${e.offsetY}]`);
+            this.touch(e.clientX, e.clientY);
         });
+        document.getElementById('map-canvas').addEventListener('mouseup', (e) => {
+        });
+
+        document.getElementById('map-canvas').addEventListener('touchstart', (e) => {
+            var touch = e.touches[0];
+            this.touchStart(touch.clientX, touch.clientY);
+            e.preventDefault();
+        });
+        document.getElementById('map-canvas').addEventListener('touchmove', (e) => {
+            var touch = e.touches[0];
+            this.touch(touch.clientX, touch.clientY);
+            e.preventDefault();
+        });
+        
     };
+
+    this.getTouchPos = function(clientX, clientY) {
+        var ratio = INIT_SIZE / this.currentWidth; // TODO: Only works when map width = height
+        var rect = document.getElementById('map-canvas').getBoundingClientRect();
+        var mx = clientX - rect.left;
+        var my = clientY - rect.top;
+        var x = Math.floor(mx * ratio) - 1;
+        var y = Math.floor(my * ratio) - 1;
+        return {'x': x, 'y': y};
+    };
+
+    this.touchStart = function(clientX, clientY) {
+        var pos = this.getTouchPos(clientX, clientY);
+        if (this.puzzle.getTile(pos.x, pos.y) == 0) {
+            this.selectedTool = 1;
+        } else if (this.puzzle.getTile(pos.x, pos.y) == 1) {
+            this.selectedTool = 0;
+        }
+        this.touch(clientX, clientY);
+
+    };
+
+    this.touch = function(clientX, clientY) {
+        var ratio = INIT_SIZE / this.currentWidth; // TODO: Only works when map width = height
+        var rect = document.getElementById('map-canvas').getBoundingClientRect();
+        var mx = clientX - rect.left;
+        var my = clientY - rect.top;
+        var x = Math.floor(mx * ratio) - 1;
+        var y = Math.floor(my * ratio) - 1;
+        if ((this.puzzle.getTile(x, y) == 0
+                || this.puzzle.getTile(x, y) == 1)
+                && this.isDeadEnd(x, y) == false) {
+            this.puzzle.setTile(x, y, this.selectedTool);
+        }
+        // console.log(`[${x}, ${y}]`);
+        this.render();
+    }
 
     this.render = function() {
         ctx.fillStyle = "rgb(255,255,255)";
@@ -67,24 +117,76 @@ let Game = function() {
                 let tile = this.puzzle.getTile(x,y);
                 let style = "rgb(0,0,0)";
                 let tf = ctx.getTransform();
-                if (tile == 0) {
-                    style = "rgb(255,255,255)";
-                } else if (tile == 1) {
-                    style = "rgb(255,255,255)";
-                } else if (tile == 2) {
-                    style = "rgb(255,255,0)";
-                }
-                ctx.fillStyle = style;
                 ctx.translate(x*TILE_SIZE, y*TILE_SIZE);
-                ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE);
+                if (tile == 0) {
+                    ctx.drawImage(document.getElementById('img_tiles'), 0, 0, TILE_SIZE, TILE_SIZE);
+                } else if (tile == 1) {
+                    this._drawWallTile(x,y);
+                    //ctx.fillStyle = "rgb(255,255,255)";
+                    //ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE);
+                } else if (tile == 2) {
+                    ctx.fillStyle = "rgb(255,255,0)";
+                    ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE);
+                }
+                 
                 // Draw grid
-                ctx.beginPath();
-                ctx.strokeStyle="rgb(128,128,128)";
-                ctx.rect(0, 0, TILE_SIZE, TILE_SIZE);
-                ctx.stroke();
+                // ctx.beginPath();
+                // ctx.strokeStyle="rgb(128,128,128)";
+                // ctx.rect(0, 0, TILE_SIZE, TILE_SIZE);
+                // ctx.stroke();
                 ctx.setTransform(tf);
             }
         }
+    };
+
+    this._drawWallTile = function(x, y) {
+        const LEFT = 8;
+        const RIGHT = 4;
+        const TOP = 2;
+        const BOTTOM = 1;
+        const WALL = 1;
+        var tilemapPos = 0;
+
+        if (this.puzzle.getTile(x+1,y) == WALL) {
+            tilemapPos |= RIGHT;
+        }
+        if (this.puzzle.getTile(x-1,y) == WALL) {
+            tilemapPos |= LEFT;
+        }
+        if (this.puzzle.getTile(x,y+1) == WALL) {
+            tilemapPos |= BOTTOM;
+        }
+        if (this.puzzle.getTile(x,y-1) == WALL) {
+            tilemapPos |= TOP;
+        }
+
+        var tilemapX = tilemapPos % 4 * TILE_SIZE;
+        var tilemapY = Math.trunc(tilemapPos / 4) * TILE_SIZE;
+        ctx.drawImage(document.getElementById('img_wallmap'), tilemapX, tilemapY, TILE_SIZE, TILE_SIZE,
+                                                            0, 0, TILE_SIZE, TILE_SIZE);
+
+/*
+[left][right][top][bottom]
+0000 = o
+0001 = n
+0010 = U
+0011 = ||
+
+0100 = [
+0101 = |'
+0110 = |_
+0111 = |X
+
+1000 = ]
+1001 = '|
+1010 = _|
+1011 = X|
+
+1100 = =
+1101 = '
+1110 = _
+1111 = X
+*/
     };
 
     this._drawDeadEnds = function() {
@@ -101,6 +203,18 @@ let Game = function() {
             ctx.setTransform(tf);
         }
     };
+
+    this.isDeadEnd = function(x, y) {
+        let deadEnds = this.puzzle.deadEnds;
+        for (var i=0; i<deadEnds.length; i+=2) {
+            var dex = deadEnds[i];
+            var dey = deadEnds[i+1];
+            if (dex == x && dey == y) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     this.resize = function() {
         nWidth = TILE_SIZE * INIT_SIZE
