@@ -8,6 +8,7 @@ let Game = function() {
     this.puzzle = null;
 
     this.selectedTool = 0;
+    this.drawing = false;
 
     this.init = function() {
         ctx.canvas.width = TILE_SIZE * INIT_SIZE;
@@ -23,9 +24,16 @@ let Game = function() {
         });
 
         document.getElementById('map-canvas').addEventListener('mousedown', (e) => {
-            this.touch(e.clientX, e.clientY);
+            this.touchStart(e.clientX, e.clientY);
+            this.drawing = true;
+        });
+        document.getElementById('map-canvas').addEventListener('mousemove', (e) => {
+            if (this.drawing) {
+                this.touch(e.clientX, e.clientY);
+            }
         });
         document.getElementById('map-canvas').addEventListener('mouseup', (e) => {
+            this.drawing = false;
         });
 
         document.getElementById('map-canvas').addEventListener('touchstart', (e) => {
@@ -74,7 +82,6 @@ let Game = function() {
                 && this.isDeadEnd(x, y) == false) {
             this.puzzle.setTile(x, y, this.selectedTool);
         }
-        // console.log(`[${x}, ${y}]`);
         this.render();
     }
 
@@ -94,22 +101,37 @@ let Game = function() {
     this._drawColAndRowHints = function() {
         const BPADDING = TILE_SIZE/6;
         const LPADDING = TILE_SIZE/4;
-        ctx.font = TILE_SIZE + "px Monospace";
-        ctx.fillStyle = "rgb(0,0,0)";
         var cols = this.puzzle.colHints;
         var rows = this.puzzle.rowHints;
         
-        cols.forEach((val) => {
+        for (var i=0; i<cols.length; i++) {
             ctx.translate(TILE_SIZE, 0);
-            ctx.fillText(val, LPADDING, TILE_SIZE - BPADDING);
-        });
+            this._drawHint(cols[i], this.puzzle.getColHintStatus(i));
+        }
         ctx.setTransform();
-        rows.forEach((val) => {
+        for (var i=0; i<rows.length; i++) {
             ctx.translate(0, TILE_SIZE);
-            ctx.fillText(val, LPADDING, TILE_SIZE - BPADDING);
-        });
+            this._drawHint(rows[i], this.puzzle.getRowHintStatus(i));
+        }
         ctx.setTransform();
     };
+
+    this._drawHint = function(value, status) {
+        const BPADDING = TILE_SIZE/6;
+        const LPADDING = TILE_SIZE/4;
+        const BELOW_COLOR = "rgb(0,0,0)";
+        const EQUAL_COLOR = "rgb(128,128,128)";
+        const ABOVE_COLOR = "rgb(255,0,0)";
+        ctx.font = TILE_SIZE + "px Monospace";
+        if (status < 0) {
+            ctx.fillStyle = BELOW_COLOR;
+        } else if (status == 0) {
+            ctx.fillStyle = EQUAL_COLOR;
+        } else {
+            ctx.fillStyle = ABOVE_COLOR;
+        }
+        ctx.fillText(value, LPADDING, TILE_SIZE - BPADDING);
+    }
 
     this._drawMap = function() {
         for (let x=0; x<this.puzzle.width; x++) {
@@ -122,11 +144,8 @@ let Game = function() {
                     ctx.drawImage(document.getElementById('img_tiles'), 0, 0, TILE_SIZE, TILE_SIZE);
                 } else if (tile == 1) {
                     this._drawWallTile(x,y);
-                    //ctx.fillStyle = "rgb(255,255,255)";
-                    //ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE);
                 } else if (tile == 2) {
-                    ctx.fillStyle = "rgb(255,255,0)";
-                    ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE);
+                    ctx.drawImage(document.getElementById('img_treasure'), 0, 0, TILE_SIZE, TILE_SIZE);
                 }
                  
                 // Draw grid

@@ -57,5 +57,41 @@ let Puzzle = function(map = new Map(8,8)) {
         return pos+1;
     }
 
+    this.getRowHintStatus = function(row) {
+        return this._getHintStatus(row, true);
+
+    };
+    this.getColHintStatus = function(col) {
+        return this._getHintStatus(col, false);
+    };
+    this._getHintStatus = function(n, isRow) {
+        const EMPTY = 1;
+        var max;
+        var hints;
+        if (isRow) {
+            max = this.height;
+            hints = this.rowHints;
+        } else {
+            max = this.width;
+            hints = this.colHints;
+        }
+        var target = hints[n];
+        var total = 0;
+
+        for (var i=0; i<max; i++) {
+            var tileVal;
+            if (isRow) {
+                tileVal = this.getTile(i, n);
+            } else {
+                tileVal = this.getTile(n, i);
+            }
+            if (tileVal == EMPTY) {
+                total++;
+            }
+        }
+
+        return total - target;
+    };
+
 
 }
