@@ -22,7 +22,7 @@ let Map = function(w, h) {
     }
 
     this.clear = function() {
-        this.tiles = Array(this.width * this.height).fill(0);
+        this.tiles = Array(this.width * this.height).fill(1);
     }
 
     this.decodeSolution = function(mapCode) {

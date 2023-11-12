@@ -4,6 +4,8 @@ let Puzzle = function(map = new Map(8,8)) {
     this.colHints = [];
     this.deadEnds = [];
     this.treasures = [];
+    this.marked = [];
+    this.name = 'Nameless Depths';
 
     const MAX_MAP_SIZE = 16;
 
@@ -25,9 +27,11 @@ let Puzzle = function(map = new Map(8,8)) {
             }
         }
 
-        // Set treasure tiles on map
+        
         if (this.width > 0 && this.height > 0) {
             this.clear();
+            this.marked = Array(this.width * this.height).fill(0);
+            // Set treasure tiles on map
             for (var i=0; i<this.treasures.length; i+=2) {
                 this.setTile(this.treasures[i], this.treasures[i+1], TREASURE);
             }
@@ -37,11 +41,11 @@ let Puzzle = function(map = new Map(8,8)) {
     this._parseHints = function(type, code, pos) {
         var hints = [];
         var char = code.charAt(pos);
-        do {
+        while (char != '.') {
             hints.push(parseInt(char, MAX_MAP_SIZE));
             pos++;
             char = code.charAt(pos);
-        } while (char != '.');
+        }
 
         if (type == 'C') {
             this.colHints = hints;
@@ -65,7 +69,7 @@ let Puzzle = function(map = new Map(8,8)) {
         return this._getHintStatus(col, false);
     };
     this._getHintStatus = function(n, isRow) {
-        const EMPTY = 1;
+        const WALL = 0;
         var max;
         var hints;
         if (isRow) {
@@ -85,13 +89,27 @@ let Puzzle = function(map = new Map(8,8)) {
             } else {
                 tileVal = this.getTile(n, i);
             }
-            if (tileVal == EMPTY) {
+            if (tileVal == WALL) {
                 total++;
             }
         }
 
         return total - target;
     };
+
+    this.getMarked = function(x, y) {
+        if (x<0 || x>=this.width || y<0 || y>=this.height) {
+            return 0;
+        }
+        return this.marked[this.getPos(x,y)];
+    };
+
+    this.setMarked = function(x, y, val) {
+        if (x<0 || x>=this.width || y<0 || y>=this.height) {
+            return;
+        }
+        this.marked[this.getPos(x,y)] = val;
+    }
 
 
 }

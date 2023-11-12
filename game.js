@@ -1,6 +1,9 @@
 let Game = function() {
     const TILE_SIZE = 16;
     const INIT_SIZE = 10;
+    const TOOL_WALL = 0;
+    const TOOL_EMPTY = 1;
+    const TOOL_MARKER = 2;
     const ctx = document.getElementById('map-canvas').getContext('2d');
 
     this.currentWidth = 1;
@@ -16,7 +19,7 @@ let Game = function() {
 
         this.puzzle = new Puzzle();
         this.puzzle.clear();
-        this.puzzle.decodePuzzle('C24343631.R45061325.M1720416067.T36.');
+        this.readDataFromUrl();
 
         window.addEventListener('resize', () => {
             this.resize();
@@ -49,6 +52,21 @@ let Game = function() {
         
     };
 
+    this.readDataFromUrl = function() {
+        var url = new URL(window.location.href);
+        var puzzleData = url.searchParams.get("puzzle");
+        var puzzleName = url.searchParams.get("name");
+        if (puzzleName) {
+            this.puzzle.name = puzzleName;
+        }
+        document.getElementById('puzzle_name').innerText =this.puzzle.name;
+        if (puzzleData) {
+            this.puzzle.decodePuzzle(puzzleData);
+        } else {
+            this.puzzle.decodePuzzle('C24343631.R45061325.M1720416067.T36.');
+        }
+    }
+
     this.getTouchPos = function(clientX, clientY) {
         var ratio = INIT_SIZE / this.currentWidth; // TODO: Only works when map width = height
         var rect = document.getElementById('map-canvas').getBoundingClientRect();
@@ -62,12 +80,13 @@ let Game = function() {
     this.touchStart = function(clientX, clientY) {
         var pos = this.getTouchPos(clientX, clientY);
         if (this.puzzle.getTile(pos.x, pos.y) == 0) {
-            this.selectedTool = 1;
+            this.selectedTool = TOOL_MARKER;
+        } else if (this.puzzle.getMarked(pos.x, pos.y) > 0) {
+            this.selectedTool = TOOL_EMPTY;
         } else if (this.puzzle.getTile(pos.x, pos.y) == 1) {
-            this.selectedTool = 0;
-        }
+            this.selectedTool = TOOL_WALL;
+        } 
         this.touch(clientX, clientY);
-
     };
 
     this.touch = function(clientX, clientY) {
@@ -80,7 +99,13 @@ let Game = function() {
         if ((this.puzzle.getTile(x, y) == 0
                 || this.puzzle.getTile(x, y) == 1)
                 && this.isDeadEnd(x, y) == false) {
-            this.puzzle.setTile(x, y, this.selectedTool);
+            if (this.selectedTool == TOOL_MARKER) {
+                this.puzzle.setTile(x, y, 1);
+                this.puzzle.setMarked(x, y, 1);
+            } else {
+                this.puzzle.setTile(x, y, this.selectedTool);
+                this.puzzle.setMarked(x, y, 0);
+            }
         }
         this.render();
     }
@@ -140,12 +165,17 @@ let Game = function() {
                 let style = "rgb(0,0,0)";
                 let tf = ctx.getTransform();
                 ctx.translate(x*TILE_SIZE, y*TILE_SIZE);
-                if (tile == 0) {
+                if (tile == 1) {
                     ctx.drawImage(document.getElementById('img_tiles'), 0, 0, TILE_SIZE, TILE_SIZE);
-                } else if (tile == 1) {
+                } else if (tile == 0) {
                     this._drawWallTile(x,y);
                 } else if (tile == 2) {
                     ctx.drawImage(document.getElementById('img_treasure'), 0, 0, TILE_SIZE, TILE_SIZE);
+                }
+
+                // Draw markers
+                if (this.puzzle.getMarked(x,y) > 0) {
+                    ctx.drawImage(document.getElementById('img_marker'), 0, 0, TILE_SIZE, TILE_SIZE);
                 }
                  
                 // Draw grid
@@ -163,7 +193,7 @@ let Game = function() {
         const RIGHT = 4;
         const TOP = 2;
         const BOTTOM = 1;
-        const WALL = 1;
+        const WALL = 0;
         var tilemapPos = 0;
 
         if (this.puzzle.getTile(x+1,y) == WALL) {
