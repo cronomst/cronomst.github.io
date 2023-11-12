@@ -49,6 +49,12 @@ let Game = function() {
             this.touch(touch.clientX, touch.clientY);
             e.preventDefault();
         });
+
+        // ====
+        // TODO: Handle this in a more controllable way
+        var game = this;
+        setInterval(function() {game.render();}, 500);
+        // ====
         
     };
 
@@ -111,7 +117,8 @@ let Game = function() {
     }
 
     this.render = function() {
-        ctx.fillStyle = "rgb(255,255,255)";
+        //ctx.fillStyle = "rgb(82,122,52)";
+        ctx.fillStyle = "rgb(151,198,117)";
         ctx.fillRect(0,0,ctx.canvas.width, ctx.canvas.height);
     
         if (this.puzzle != null) {
@@ -119,6 +126,7 @@ let Game = function() {
             ctx.translate(TILE_SIZE, TILE_SIZE);
             this._drawMap();
             this._drawDeadEnds();
+            this._drawGrid();
             ctx.setTransform();
         }
     };
@@ -177,12 +185,19 @@ let Game = function() {
                 if (this.puzzle.getMarked(x,y) > 0) {
                     ctx.drawImage(document.getElementById('img_marker'), 0, 0, TILE_SIZE, TILE_SIZE);
                 }
-                 
+                ctx.setTransform(tf);
+            }
+        }
+    };
+
+    this._drawGrid = function() {
+        for (let x=0; x<this.puzzle.width; x++) {
+            for (let y=0; y<this.puzzle.height; y++) {
+                let tf = ctx.getTransform();
+                ctx.translate(x*TILE_SIZE, y*TILE_SIZE);
                 // Draw grid
-                // ctx.beginPath();
-                // ctx.strokeStyle="rgb(128,128,128)";
-                // ctx.rect(0, 0, TILE_SIZE, TILE_SIZE);
-                // ctx.stroke();
+                ctx.strokeStyle="rgb(151,198,117)";
+                ctx.strokeRect(0.5, 0.5, TILE_SIZE, TILE_SIZE);
                 ctx.setTransform(tf);
             }
         }
@@ -245,10 +260,12 @@ let Game = function() {
             var x = deadEnds[i];
             var y = deadEnds[i+1];
             var tf = ctx.getTransform();
-            ctx.beginPath();
-            ctx.translate(x*TILE_SIZE + TILE_SIZE/2, y*TILE_SIZE + TILE_SIZE/2);
-            ctx.arc(0,  0, TILE_SIZE/2, 0, 2 * Math.PI);
-            ctx.fill();
+            ctx.translate(x*TILE_SIZE, y*TILE_SIZE);
+            if (Math.floor(Date.now() / 500) % 2 == 0) {
+                ctx.scale(-1, 1);
+                ctx.translate(-TILE_SIZE, 0);
+            }
+            ctx.drawImage(document.getElementById('img_monster0'), 0, 0, TILE_SIZE, TILE_SIZE);
             ctx.setTransform(tf);
         }
     };
@@ -275,11 +292,11 @@ let Game = function() {
         const nativeRatio = nWidth / nHeight;
         const browserWindowRatio = cWidth / cHeight;
 
-        // browser window is too wide
+        // browser window is wider
         if (browserWindowRatio > nativeRatio) {
             cWidth = Math.floor(cHeight * nativeRatio);
         } else {
-            // browser window is too tall
+            // browser window is taller
             cHeight = Math.floor(cWidth / nativeRatio);
         }
 
