@@ -300,7 +300,7 @@ let Game = function() {
 
     this.isDeadEnd = function(x, y) {
         let deadEnds = this.puzzle.deadEnds;
-        for (var i=0; i<deadEnds.length; i+=2) {
+        for (var i=0; i<deadEnds.length; i+=3) {
             var dex = deadEnds[i];
             var dey = deadEnds[i+1];
             if (dex == x && dey == y) {
