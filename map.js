@@ -57,6 +57,7 @@ let Map = function(w, h) {
         this.getDeadEnds().forEach((de) => {
             out += de.x.toString(MAX_MAP_SIZE);
             out += de.y.toString(MAX_MAP_SIZE);
+            out += '0'; //Placeholder for monster type
         });
         out += '.';
 

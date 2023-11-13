@@ -134,8 +134,9 @@ let App = function() {
     };
 
     this.encode = function() {
+        var puzzleCode = this.map.encodePuzzle();
         document.getElementById("code").innerHTML = "<p>" +  this.map.encodeSolution() + "</p>" +
-                "<p>" +  this.map.encodePuzzle() + "</p>";
+                `<p><a href="https://cronomst.github.io/?puzzle=${puzzleCode}">${puzzleCode}</a></p>`;
     };
 
     this.validate = function() {

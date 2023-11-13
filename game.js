@@ -4,6 +4,7 @@ let Game = function() {
     const TOOL_WALL = 0;
     const TOOL_EMPTY = 1;
     const TOOL_MARKER = 2;
+    const MONSTER_TYPES = 1;
     const ctx = document.getElementById('map-canvas').getContext('2d');
 
     this.currentWidth = 1;
@@ -27,8 +28,23 @@ let Game = function() {
         });
 
         document.getElementById('map-canvas').addEventListener('mousedown', (e) => {
-            this.touchStart(e.clientX, e.clientY);
+            var pos = this.getTouchPos(e.clientX, e.clientY);
+            if (e.button == 0) {
+                if (this.puzzle.getTile(pos.x, pos.y) == 0) {
+                    this.selectedTool = TOOL_EMPTY;
+                } else if (this.puzzle.getTile(pos.x, pos.y) == 1) {
+                    this.selectedTool = TOOL_WALL;
+                } 
+            } else if (e.button == 2) {
+                if (this.puzzle.getMarked(pos.x, pos.y) > 0) {
+                    this.selectedTool = TOOL_EMPTY;
+                } else {
+                    this.selectedTool = TOOL_MARKER;
+                } 
+            }
+            this.touch(e.clientX, e.clientY);
             this.drawing = true;
+            e.preventDefault();
         });
         document.getElementById('map-canvas').addEventListener('mousemove', (e) => {
             if (this.drawing) {
@@ -37,6 +53,10 @@ let Game = function() {
         });
         document.getElementById('map-canvas').addEventListener('mouseup', (e) => {
             this.drawing = false;
+            e.preventDefault();
+        });
+        document.getElementById('map-canvas').addEventListener('contextmenu', (e) => {
+            e.preventDefault();
         });
 
         document.getElementById('map-canvas').addEventListener('touchstart', (e) => {
@@ -69,7 +89,7 @@ let Game = function() {
         if (puzzleData) {
             this.puzzle.decodePuzzle(puzzleData);
         } else {
-            this.puzzle.decodePuzzle('C24343631.R45061325.M1720416067.T36.');
+            this.puzzle.decodePuzzle('C24343631.R45061325.M170200410600670.T36.');
         }
     }
 
@@ -86,11 +106,11 @@ let Game = function() {
     this.touchStart = function(clientX, clientY) {
         var pos = this.getTouchPos(clientX, clientY);
         if (this.puzzle.getTile(pos.x, pos.y) == 0) {
-            this.selectedTool = TOOL_MARKER;
-        } else if (this.puzzle.getMarked(pos.x, pos.y) > 0) {
             this.selectedTool = TOOL_EMPTY;
-        } else if (this.puzzle.getTile(pos.x, pos.y) == 1) {
+        } else if (this.puzzle.getMarked(pos.x, pos.y) > 0) {
             this.selectedTool = TOOL_WALL;
+        } else if (this.puzzle.getTile(pos.x, pos.y) == 1) {
+            this.selectedTool = TOOL_MARKER;
         } 
         this.touch(clientX, clientY);
     };
@@ -102,18 +122,21 @@ let Game = function() {
         var my = clientY - rect.top;
         var x = Math.floor(mx * ratio) - 1;
         var y = Math.floor(my * ratio) - 1;
-        if ((this.puzzle.getTile(x, y) == 0
-                || this.puzzle.getTile(x, y) == 1)
-                && this.isDeadEnd(x, y) == false) {
-            if (this.selectedTool == TOOL_MARKER) {
-                this.puzzle.setTile(x, y, 1);
-                this.puzzle.setMarked(x, y, 1);
-            } else {
+
+        var currentTile = this.puzzle.getTile(x, y);
+
+        if (this.isDeadEnd(x, y) == false) {
+            if ((this.selectedTool == TOOL_WALL || this.selectedTool == TOOL_EMPTY)
+                    && (currentTile == 0 || currentTile == 1)) {
                 this.puzzle.setTile(x, y, this.selectedTool);
                 this.puzzle.setMarked(x, y, 0);
+            } else if (this.selectedTool == TOOL_MARKER && currentTile == 1) {
+                this.puzzle.setTile(x, y, 1);
+                this.puzzle.setMarked(x, y, 1);
             }
         }
         this.render();
+        this.checkIfSolved();
     }
 
     this.render = function() {
@@ -255,17 +278,22 @@ let Game = function() {
 
     this._drawDeadEnds = function() {
         let deadEnds = this.puzzle.deadEnds;
-        for (var i=0; i<deadEnds.length; i+=2) {
+        for (var i=0; i<deadEnds.length; i+=3) {
             ctx.fillStyle = "rgb(255,0,0)";
             var x = deadEnds[i];
             var y = deadEnds[i+1];
+            var type = deadEnds[i+2];
+            if (type < 0 || type > MONSTER_TYPES) {
+                type = 0;
+            }
             var tf = ctx.getTransform();
             ctx.translate(x*TILE_SIZE, y*TILE_SIZE);
             if (Math.floor(Date.now() / 500) % 2 == 0) {
                 ctx.scale(-1, 1);
                 ctx.translate(-TILE_SIZE, 0);
             }
-            ctx.drawImage(document.getElementById('img_monster0'), 0, 0, TILE_SIZE, TILE_SIZE);
+            ctx.drawImage(document.getElementById('img_monster'), 0, type*TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                            0, 0, TILE_SIZE, TILE_SIZE);
             ctx.setTransform(tf);
         }
     };
@@ -280,9 +308,16 @@ let Game = function() {
             }
         }
         return false;
-    }
+    };
+
+    this.checkIfSolved = function() {
+        // TODO: Check if solved by checking Validator.validate values,
+        //       checking if dead ends match dead end hints,
+        //       and if all row/column diffs are 0.
+    };
 
     this.resize = function() {
+        const MAX_CANVAS_WIDTH = 1440;
         nWidth = TILE_SIZE * INIT_SIZE
         nHeight = nWidth;
         cWidth = window.innerWidth;
@@ -297,6 +332,11 @@ let Game = function() {
             cWidth = Math.floor(cHeight * nativeRatio);
         } else {
             // browser window is taller
+            cHeight = Math.floor(cWidth / nativeRatio);
+        }
+
+        if (cWidth > MAX_CANVAS_WIDTH) {
+            cWidth = MAX_CANVAS_WIDTH;
             cHeight = Math.floor(cWidth / nativeRatio);
         }
 

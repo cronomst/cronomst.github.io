@@ -2,8 +2,8 @@ let Puzzle = function(map = new Map(8,8)) {
     this.__proto__ = map;
     this.rowHints = [];
     this.colHints = [];
-    this.deadEnds = [];
-    this.treasures = [];
+    this.deadEnds = []; // array of triples containing x,y,monster_type
+    this.treasures = []; // array of doubles containging x,y
     this.marked = [];
     this.name = 'Nameless Depths';
 
