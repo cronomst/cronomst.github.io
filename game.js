@@ -13,6 +13,11 @@ let Game = function() {
 
     this.selectedTool = 0;
     this.drawing = false;
+    this.solved = false;
+
+    this.undoStack = [];
+    this.redoStack = [];
+
 
     this.init = function() {
         ctx.canvas.width = TILE_SIZE * INIT_SIZE;
@@ -28,6 +33,9 @@ let Game = function() {
         });
 
         document.getElementById('map-canvas').addEventListener('mousedown', (e) => {
+            this.pushUndoRedo(false);
+            this.redoStack = [];
+
             var pos = this.getTouchPos(e.clientX, e.clientY);
             if (e.button == 0) {
                 if (this.puzzle.getTile(pos.x, pos.y) == 0) {
@@ -36,7 +44,7 @@ let Game = function() {
                     this.selectedTool = TOOL_WALL;
                 } 
             } else if (e.button == 2) {
-                if (this.puzzle.getMarked(pos.x, pos.y) > 0) {
+                if (this.puzzle.getMarked(pos.x, pos.y) == true) {
                     this.selectedTool = TOOL_EMPTY;
                 } else {
                     this.selectedTool = TOOL_MARKER;
@@ -60,6 +68,9 @@ let Game = function() {
         });
 
         document.getElementById('map-canvas').addEventListener('touchstart', (e) => {
+            this.pushUndoRedo(false);
+            this.redoStack = [];
+
             var touch = e.touches[0];
             this.touchStart(touch.clientX, touch.clientY);
             e.preventDefault();
@@ -69,6 +80,8 @@ let Game = function() {
             this.touch(touch.clientX, touch.clientY);
             e.preventDefault();
         });
+        document.getElementById('undo').addEventListener('click', (e) => { this.undo(); });
+        document.getElementById('redo').addEventListener('click', (e) => { this.redo(); });
 
         // ====
         // TODO: Handle this in a more controllable way
@@ -107,7 +120,7 @@ let Game = function() {
         var pos = this.getTouchPos(clientX, clientY);
         if (this.puzzle.getTile(pos.x, pos.y) == 0) {
             this.selectedTool = TOOL_EMPTY;
-        } else if (this.puzzle.getMarked(pos.x, pos.y) > 0) {
+        } else if (this.puzzle.getMarked(pos.x, pos.y) == true) {
             this.selectedTool = TOOL_WALL;
         } else if (this.puzzle.getTile(pos.x, pos.y) == 1) {
             this.selectedTool = TOOL_MARKER;
@@ -129,10 +142,10 @@ let Game = function() {
             if ((this.selectedTool == TOOL_WALL || this.selectedTool == TOOL_EMPTY)
                     && (currentTile == 0 || currentTile == 1)) {
                 this.puzzle.setTile(x, y, this.selectedTool);
-                this.puzzle.setMarked(x, y, 0);
+                this.puzzle.setMarked(x, y, false);
             } else if (this.selectedTool == TOOL_MARKER && currentTile == 1) {
                 this.puzzle.setTile(x, y, 1);
-                this.puzzle.setMarked(x, y, 1);
+                this.puzzle.setMarked(x, y, true);
             }
         }
         this.render();
@@ -205,7 +218,7 @@ let Game = function() {
                 }
 
                 // Draw markers
-                if (this.puzzle.getMarked(x,y) > 0) {
+                if (this.puzzle.getMarked(x,y) == true) {
                     ctx.drawImage(document.getElementById('img_marker'), 0, 0, TILE_SIZE, TILE_SIZE);
                 }
                 ctx.setTransform(tf);
@@ -308,6 +321,60 @@ let Game = function() {
             }
         }
         return false;
+    };
+
+    this.undo = function() {
+        if (this.undoStack.length > 0) {
+            var mapdata = this.undoStack.pop();
+            this.pushUndoRedo(true);
+            this.undoToMap(mapdata);
+            this.render();
+        }
+    };
+
+    this.redo = function() {
+        if (this.redoStack.length > 0) {
+            var mapdata = this.redoStack.pop();
+            this.pushUndoRedo(false);
+            this.undoToMap(mapdata);
+            this.render();
+        }
+    };
+
+    /**
+     * Convert map data from undo/redo stacks to tile/marker data for puzzle
+     * @param {Array} mapdata 
+     */
+    this.undoToMap = function(mapdata) {
+        for (var i=0; i<mapdata.length; i++) {
+            if (mapdata[i] == 9) {
+                this.puzzle.tiles[i] = 1;
+                this.puzzle.marked[i] = true;
+            } else {
+                this.puzzle.tiles[i] = mapdata[i];
+                this.puzzle.marked[i] = false;
+            }
+        }
+    };
+
+    /**
+     * Push the current map data to either to undo or redo stack
+     * @param {boolean} updateRedo 
+     */
+    this.pushUndoRedo = function(updateRedo=false) {
+        var mapdata = [];
+        for (var i=0; i<this.puzzle.tiles.length; i++) {
+            if (this.puzzle.marked[i] == true) {
+                mapdata.push(9);
+            } else {
+                mapdata.push(this.puzzle.tiles[i]);
+            }
+        };
+        if (updateRedo) {
+            this.redoStack.push(mapdata);
+        } else {
+            this.undoStack.push(mapdata);
+        }
     };
 
     this.checkIfSolved = function() {

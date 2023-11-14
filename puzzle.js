@@ -30,7 +30,7 @@ let Puzzle = function(map = new Map(8,8)) {
         
         if (this.width > 0 && this.height > 0) {
             this.clear();
-            this.marked = Array(this.width * this.height).fill(0);
+            this.marked = Array(this.width * this.height).fill(false);
             // Set treasure tiles on map
             for (var i=0; i<this.treasures.length; i+=2) {
                 this.setTile(this.treasures[i], this.treasures[i+1], TREASURE);
@@ -99,7 +99,7 @@ let Puzzle = function(map = new Map(8,8)) {
 
     this.getMarked = function(x, y) {
         if (x<0 || x>=this.width || y<0 || y>=this.height) {
-            return 0;
+            return false;
         }
         return this.marked[this.getPos(x,y)];
     };

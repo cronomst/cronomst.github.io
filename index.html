@@ -19,11 +19,26 @@
         font-style: italic;
         font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
       }
+      button {
+        
+        height: 256px;
+        width: 256px;
+        margin-left: 70%;
+        margin-top: 32px;
+        background-color: darkred;
+        font-size: 64px;
+        color: white;
+
+      }
     </style>
   </head>
   <body>
     <canvas id="map-canvas"></canvas>
     <h1 id="puzzle_name"></h1>
+    <div class="controls">
+        <button id="undo">Undo</button>
+        <button id="redo">Redo</button>
+    </div>
     <img src="images/tiles.png" class="resource" id="img_tiles"/>
     <img src="images/wallmap.png" class="resource" id="img_wallmap"/>
     <img src="images/treasure.png" class="resource" id="img_treasure"/>
