@@ -10,6 +10,7 @@ let Game = function() {
     this.currentWidth = 1;
     this.currentHeight = 1;
     this.puzzle = null;
+    this.validator = new Validator();
 
     this.selectedTool = 0;
     this.drawing = false;
@@ -129,6 +130,9 @@ let Game = function() {
     };
 
     this.touch = function(clientX, clientY) {
+        if (this.solved == true) {
+            return;
+        }
         var ratio = INIT_SIZE / this.currentWidth; // TODO: Only works when map width = height
         var rect = document.getElementById('map-canvas').getBoundingClientRect();
         var mx = clientX - rect.left;
@@ -158,11 +162,15 @@ let Game = function() {
         ctx.fillRect(0,0,ctx.canvas.width, ctx.canvas.height);
     
         if (this.puzzle != null) {
-            this._drawColAndRowHints();
+            if (this.solved == false) {
+                this._drawColAndRowHints();
+            }
             ctx.translate(TILE_SIZE, TILE_SIZE);
             this._drawMap();
             this._drawDeadEnds();
-            this._drawGrid();
+            if (this.solved == false) {
+                this._drawGrid();
+            }
             ctx.setTransform();
         }
     };
@@ -324,6 +332,9 @@ let Game = function() {
     };
 
     this.undo = function() {
+        if (this.solved == true) {
+            return;
+        }
         if (this.undoStack.length > 0) {
             var mapdata = this.undoStack.pop();
             this.pushUndoRedo(true);
@@ -333,6 +344,9 @@ let Game = function() {
     };
 
     this.redo = function() {
+        if (this.solved == true) {
+            return;
+        }
         if (this.redoStack.length > 0) {
             var mapdata = this.redoStack.pop();
             this.pushUndoRedo(false);
@@ -378,9 +392,9 @@ let Game = function() {
     };
 
     this.checkIfSolved = function() {
-        // TODO: Check if solved by checking Validator.validate values,
-        //       checking if dead ends match dead end hints,
-        //       and if all row/column diffs are 0.
+        if (this.validator.validateSolution(this.puzzle)) {
+            this.solved = true;
+        }
     };
 
     this.resize = function() {

@@ -141,8 +141,8 @@ let App = function() {
 
     this.validate = function() {
         let result = this.validator.validate(this.map);
-        let valid = result.continguous && result.treasure && result.hallWidth;
-        let out = result.continguous == false ? "<p>One or more tiles cannot be reached.</p>" : "";
+        let valid = result.contiguous && result.treasure && result.hallWidth;
+        let out = result.contiguous == false ? "<p>One or more tiles cannot be reached.</p>" : "";
         out += result.treasure == false ? "<p>A treasure is not within a 3x3 room with exactly one exit and one treasure.</p>" : "";
         out += result.hallWidth == false ? "<p>A corridor is wider than 1 tile.</p>" : "";
 

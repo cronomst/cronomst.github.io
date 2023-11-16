@@ -6,16 +6,60 @@ let Validator = function() {
     const TREASURE = 2;
     this.validate = function(map) {
         var contiguous = this.isContiguous(map);
-        
         var mapCopy = this.createValidationCopy(map);
         var treasure = this.isTreasureValid(map, mapCopy);
         var hallWidth = this.isHallWidthValid(map, mapCopy);
 
         return {
-            "continguous": contiguous,
+            "contiguous": contiguous,
             "treasure": treasure,
             "hallWidth": hallWidth
         };
+    };
+
+    this.validateSolution = function(puzzle) {
+        var valdata = this.validate(puzzle);
+        var deadEnds = this._validateSolutionDeadEnds(puzzle);
+        var hints = this._validateSolutionRowColHints(puzzle);
+        return valdata.contiguous && valdata.treasure && valdata.hallWidth && deadEnds && hints;
+    };
+
+    this._validateSolutionDeadEnds = function(puzzle) {
+        var actualDeadEnds = puzzle.getDeadEnds();
+        var puzzleDeadEnds = this._normalizeDeadEnds(puzzle.deadEnds);
+        
+        if (actualDeadEnds.length != puzzleDeadEnds.length) {
+            return false;
+        }
+        
+        for (var i=0; i<actualDeadEnds.length; i++) {
+            if (puzzleDeadEnds.some(e => e.x == actualDeadEnds[i].x && e.y == actualDeadEnds[i].y) == false) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    this._normalizeDeadEnds = function(puzzleDeadEnds) {
+        var out = [];
+        for (var i=0; i<puzzleDeadEnds.length; i+=3) {
+            out.push({'x': puzzleDeadEnds[i], 'y': puzzleDeadEnds[i+1]});
+        }
+        return out;
+    };
+    
+    this._validateSolutionRowColHints = function(puzzle) {
+        for (var i=0; i<puzzle.height; i++) {
+            if (puzzle.getRowHintStatus(i) !== 0) {
+                return false;
+            }
+        }
+        for (var i=0; i<puzzle.width; i++) {
+            if (puzzle.getColHintStatus(i) !== 0) {
+                return false;
+            }
+        }
+        return true;
     };
 
     /**
