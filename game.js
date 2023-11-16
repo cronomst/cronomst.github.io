@@ -226,7 +226,7 @@ let Game = function() {
                 }
 
                 // Draw markers
-                if (this.puzzle.getMarked(x,y) == true) {
+                if (this.puzzle.getMarked(x,y) == true && this.solved == false) {
                     ctx.drawImage(document.getElementById('img_marker'), 0, 0, TILE_SIZE, TILE_SIZE);
                 }
                 ctx.setTransform(tf);
