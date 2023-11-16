@@ -22,13 +22,18 @@
       button {
         height: 256px;
         width: 256px;
-        margin-left: 70%;
+        margin-left: 32px;
         margin-top: 32px;
         background-color: darkred;
         font-size: 64px;
         color: white;
+        border-width: 16px;
         touch-action: manipulation;
       }
+      .marker_mode {
+        border-style: inset;
+      }
+
     </style>
   </head>
   <body>
@@ -37,6 +42,7 @@
     <div class="controls">
         <button id="undo">Undo</button>
         <button id="redo">Redo</button>
+        <button id="tool_mode">Mark</button>
     </div>
     <img src="images/tiles.png" class="resource" id="img_tiles"/>
     <img src="images/wallmap.png" class="resource" id="img_wallmap"/>

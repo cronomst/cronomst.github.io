@@ -4,7 +4,7 @@ let Game = function() {
     const TOOL_WALL = 0;
     const TOOL_EMPTY = 1;
     const TOOL_MARKER = 2;
-    const MONSTER_TYPES = 1;
+    const MONSTER_TYPES = 2;
     const ctx = document.getElementById('map-canvas').getContext('2d');
 
     this.currentWidth = 1;
@@ -13,6 +13,7 @@ let Game = function() {
     this.validator = new Validator();
 
     this.selectedTool = 0;
+    this.toolMode = 0; // 0 = Wall, 1 = Marker
     this.drawing = false;
     this.solved = false;
 
@@ -83,6 +84,15 @@ let Game = function() {
         });
         document.getElementById('undo').addEventListener('click', (e) => { this.undo(); });
         document.getElementById('redo').addEventListener('click', (e) => { this.redo(); });
+        document.getElementById('tool_mode').addEventListener('click', (e) => {
+            if (this.toolMode == 0) {
+                this.toolMode = 1;
+                e.target.classList.add("marker_mode");
+            } else {
+                this.toolMode = 0;
+                e.target.classList.remove("marker_mode");
+            }
+        });
 
         // ====
         // TODO: Handle this in a more controllable way
@@ -122,9 +132,17 @@ let Game = function() {
         if (this.puzzle.getTile(pos.x, pos.y) == 0) {
             this.selectedTool = TOOL_EMPTY;
         } else if (this.puzzle.getMarked(pos.x, pos.y) == true) {
-            this.selectedTool = TOOL_WALL;
+            if (this.toolMode == 0) {
+                this.selectedTool = TOOL_WALL;
+            } else {
+                this.selectedTool = TOOL_EMPTY;
+            }
         } else if (this.puzzle.getTile(pos.x, pos.y) == 1) {
-            this.selectedTool = TOOL_MARKER;
+            if (this.toolMode == 0) {
+                this.selectedTool = TOOL_WALL;
+            } else {
+                this.selectedTool = TOOL_MARKER;
+            }
         } 
         this.touch(clientX, clientY);
     };
@@ -394,6 +412,7 @@ let Game = function() {
     this.checkIfSolved = function() {
         if (this.validator.validateSolution(this.puzzle)) {
             this.solved = true;
+            navigator.vibrate([100, 50, 100]);
         }
     };
 
