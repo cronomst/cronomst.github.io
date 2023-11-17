@@ -87,11 +87,10 @@ let Game = function() {
         document.getElementById('tool_mode').addEventListener('click', (e) => {
             if (this.toolMode == 0) {
                 this.toolMode = 1;
-                e.target.classList.add("marker_mode");
             } else {
                 this.toolMode = 0;
-                e.target.classList.remove("marker_mode");
             }
+            this.render();
         });
 
         // ====
@@ -190,7 +189,25 @@ let Game = function() {
                 this._drawGrid();
             }
             ctx.setTransform();
+            this._drawToolMode();
         }
+    };
+
+    this._drawToolMode = function() {
+        ctx.translate(ctx.canvas.width - TILE_SIZE, ctx.canvas.height - TILE_SIZE);
+        var image;
+        if (this.toolMode == 0) {
+            image = document.getElementById('img_wallmap');
+        } else {
+            image = document.getElementById('img_marker');
+        }
+        
+        if (Math.floor(Date.now() / 500) % 2 == 0) {
+            ctx.drawImage(image, 0, 0, TILE_SIZE, TILE_SIZE, 0, 0, TILE_SIZE, TILE_SIZE);
+        }
+        ctx.strokeStyle="rgb(48,71,31)";
+        ctx.strokeRect(0.5, 0.5, TILE_SIZE-1, TILE_SIZE-1);
+        ctx.setTransform();
     };
 
     this._drawColAndRowHints = function() {

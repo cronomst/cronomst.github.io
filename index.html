@@ -17,21 +17,39 @@
       }
       h1 {
         font-style: italic;
-        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        padding-left: 1em;
       }
       button {
+        height: 128px;
+        width: 256px;
+        margin-top: 32px;
+        margin: 16px;
+        background-color: gray;
+        font-size: 64px;
+        color: white;
+        border-width: 16px;
+        touch-action: manipulation;
+        border-radius: 20%;
+        border-color: darkgray;
+      }
+      button#tool_mode {
         height: 256px;
         width: 256px;
-        margin-left: 32px;
         margin-top: 32px;
         background-color: darkred;
         font-size: 64px;
         color: white;
         border-width: 16px;
         touch-action: manipulation;
+        border-radius: 50%;
+        border-color: red;
       }
       .marker_mode {
         border-style: inset;
+      }
+      .controls {
+        text-align: center;
       }
 
     </style>
@@ -40,9 +58,9 @@
     <canvas id="map-canvas"></canvas>
     <h1 id="puzzle_name"></h1>
     <div class="controls">
+        <button id="tool_mode"></button><br />
         <button id="undo">Undo</button>
         <button id="redo">Redo</button>
-        <button id="tool_mode">Mark</button>
     </div>
     <img src="images/tiles.png" class="resource" id="img_tiles"/>
     <img src="images/wallmap.png" class="resource" id="img_wallmap"/>
