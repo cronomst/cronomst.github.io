@@ -249,8 +249,19 @@ let Game = function() {
     }
 
     this._drawMap = function() {
-        for (let x=0; x<this.puzzle.width; x++) {
-            for (let y=0; y<this.puzzle.height; y++) {
+        let startx = 0;
+        let endx = this.puzzle.width;
+        let starty = 0;
+        let endy = this.puzzle.height;
+        // Once solved, this will turn the puzzle border into regular wall tiles
+        if (this.solved) {
+            startx--;
+            starty--;
+            endx++;
+            endy++;
+        }
+        for (let x=startx; x<endx; x++) {
+            for (let y=starty; y<endy; y++) {
                 let tile = this.puzzle.getTile(x,y);
                 let style = "rgb(0,0,0)";
                 let tf = ctx.getTransform();
