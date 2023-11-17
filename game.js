@@ -194,6 +194,9 @@ let Game = function() {
     };
 
     this._drawToolMode = function() {
+        if (this.solved == true) {
+            return;
+        }
         ctx.translate(ctx.canvas.width - TILE_SIZE, ctx.canvas.height - TILE_SIZE);
         var image;
         if (this.toolMode == 0) {
