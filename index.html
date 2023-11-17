@@ -11,6 +11,7 @@
       canvas {
         cursor: crosshair;
         image-rendering: pixelated;
+        border-bottom: 16px solid gray;
       }
       .resource {
         display: none;
@@ -18,17 +19,19 @@
       h1 {
         font-style: italic;
         font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-size: 40px;
         padding-left: 1em;
+        color: darkblue;
       }
       button {
-        height: 128px;
+        height: 64px;
         width: 256px;
         margin-top: 32px;
         margin: 16px;
         background-color: gray;
         font-size: 64px;
         color: white;
-        border-width: 16px;
+        border-width: 8px;
         touch-action: manipulation;
         border-radius: 20%;
         border-color: darkgray;
@@ -37,19 +40,26 @@
         height: 256px;
         width: 256px;
         margin-top: 32px;
-        background-color: darkred;
+        background-color: rgb(139, 8, 63);
         font-size: 64px;
         color: white;
         border-width: 16px;
         touch-action: manipulation;
         border-radius: 50%;
         border-color: red;
+
+        grid-column: 1 / 3;
       }
-      .marker_mode {
-        border-style: inset;
+      button#tool_mode + div {
+        grid-column: 1 / 3;
       }
       .controls {
-        text-align: center;
+        display: grid;
+        justify-items: center;
+        grid-template-columns: 1fr 1fr;
+        font-size: 40px;
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        color: darkblue;
       }
 
     </style>
@@ -58,15 +68,19 @@
     <canvas id="map-canvas"></canvas>
     <h1 id="puzzle_name"></h1>
     <div class="controls">
-        <button id="tool_mode"></button><br />
-        <button id="undo">Undo</button>
-        <button id="redo">Redo</button>
+        <button id="tool_mode"></button>
+        <div>A</div>
+        <button id="undo"></button>
+        <button id="redo"></button>
+        <div>UNDO</div>
+        <div>REDO</div>
     </div>
     <img src="images/tiles.png" class="resource" id="img_tiles"/>
     <img src="images/wallmap.png" class="resource" id="img_wallmap"/>
     <img src="images/treasure.png" class="resource" id="img_treasure"/>
     <img src="images/marker.png" class="resource" id="img_marker"/>
     <img src="images/monsters.png" class="resource" id="img_monster"/>
+    <img src="images/mode.png" class="resource" id="img_mode"/>
   </body>
   <script src="map.js"></script>
   <script src="puzzle.js"></script>

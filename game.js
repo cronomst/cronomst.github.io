@@ -5,6 +5,8 @@ let Game = function() {
     const TOOL_EMPTY = 1;
     const TOOL_MARKER = 2;
     const MONSTER_TYPES = 2;
+    const COLOR2 = "rgb(151,198,117)";
+    const COLOR3 = "rgb(82,122,52)";
     const ctx = document.getElementById('map-canvas').getContext('2d');
 
     this.currentWidth = 1;
@@ -194,28 +196,26 @@ let Game = function() {
     };
 
     this._drawToolMode = function() {
+        const BPADDING = TILE_SIZE/6;
+        const LPADDING = TILE_SIZE/4;
         if (this.solved == true) {
             return;
         }
-        ctx.translate(ctx.canvas.width - TILE_SIZE, ctx.canvas.height - TILE_SIZE);
-        var image;
+        ctx.translate(ctx.canvas.width/2 - TILE_SIZE, ctx.canvas.height - TILE_SIZE);
+        ctx.fillStyle = COLOR3;
+        ctx.fillText('A-', -(TILE_SIZE*1.5) + LPADDING, TILE_SIZE - BPADDING);
+
+        ctx.drawImage(document.getElementById('img_mode'), 0, 0, TILE_SIZE*2, TILE_SIZE);
+        ctx.strokeStyle = COLOR3;
         if (this.toolMode == 0) {
-            image = document.getElementById('img_wallmap');
+            ctx.strokeRect(2.5, 2.5, TILE_SIZE-3, TILE_SIZE-5);
         } else {
-            image = document.getElementById('img_marker');
+            ctx.strokeRect(TILE_SIZE + 0.5, 2.5, TILE_SIZE-3, TILE_SIZE-5);
         }
-        
-        if (Math.floor(Date.now() / 500) % 2 == 0) {
-            ctx.drawImage(image, 0, 0, TILE_SIZE, TILE_SIZE, 0, 0, TILE_SIZE, TILE_SIZE);
-        }
-        ctx.strokeStyle="rgb(48,71,31)";
-        ctx.strokeRect(0.5, 0.5, TILE_SIZE-1, TILE_SIZE-1);
         ctx.setTransform();
     };
 
     this._drawColAndRowHints = function() {
-        const BPADDING = TILE_SIZE/6;
-        const LPADDING = TILE_SIZE/4;
         var cols = this.puzzle.colHints;
         var rows = this.puzzle.rowHints;
         
@@ -338,7 +338,6 @@ let Game = function() {
     this._drawDeadEnds = function() {
         let deadEnds = this.puzzle.deadEnds;
         for (var i=0; i<deadEnds.length; i+=3) {
-            ctx.fillStyle = "rgb(255,0,0)";
             var x = deadEnds[i];
             var y = deadEnds[i+1];
             var type = deadEnds[i+2];
@@ -432,7 +431,7 @@ let Game = function() {
     this.checkIfSolved = function() {
         if (this.validator.validateSolution(this.puzzle)) {
             this.solved = true;
-            navigator.vibrate([100, 50, 100]);
+            navigator.vibrate([100, 50, 100, 50, 200]);
         }
     };
 
