@@ -9,11 +9,13 @@ let App = function() {
     const OFFSET_LEFT = TILE_SIZE;
 
     this.init = function() {
-
-        this.clearMap();
-        this.decode("14051041555540014555454146455004");
-        this.validate();
         const canvas = document.getElementById("map-canvas");
+        canvas.width = TILE_SIZE * (this.map.width + 1);
+        canvas.height = TILE_SIZE * (this.map.height + 1);
+        this.clearMap();
+        //this.decode("14051041555540014555454146455004");
+        this.validate();
+        
         canvas.addEventListener("mousedown", (e) => {
             var x = Math.floor((e.offsetX - OFFSET_LEFT) / TILE_SIZE);
             var y = Math.floor((e.offsetY - OFFSET_TOP) / TILE_SIZE);
