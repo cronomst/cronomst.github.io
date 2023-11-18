@@ -4,7 +4,7 @@ let Game = function() {
     const TOOL_WALL = 0;
     const TOOL_EMPTY = 1;
     const TOOL_MARKER = 2;
-    const MONSTER_TYPES = 2;
+    const MONSTER_TYPES = 3;
     const COLOR2 = "rgb(151,198,117)";
     const COLOR3 = "rgb(82,122,52)";
     const ctx = document.getElementById('map-canvas').getContext('2d');
@@ -372,16 +372,16 @@ let Game = function() {
             var x = deadEnds[i];
             var y = deadEnds[i+1];
             var type = deadEnds[i+2];
+            var frame = 0;
             if (type < 0 || type > MONSTER_TYPES) {
                 type = 0;
             }
             var tf = ctx.getTransform();
             ctx.translate(x*TILE_SIZE, y*TILE_SIZE);
             if (Math.floor(Date.now() / 500) % 2 == 0) {
-                ctx.scale(-1, 1);
-                ctx.translate(-TILE_SIZE, 0);
+                frame = 1;
             }
-            ctx.drawImage(document.getElementById('img_monster'), 0, type*TILE_SIZE, TILE_SIZE, TILE_SIZE,
+            ctx.drawImage(document.getElementById('img_monster'), frame*TILE_SIZE, type*TILE_SIZE, TILE_SIZE, TILE_SIZE,
                                                             0, 0, TILE_SIZE, TILE_SIZE);
             ctx.setTransform(tf);
         }
