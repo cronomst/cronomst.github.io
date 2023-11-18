@@ -2,8 +2,46 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
     <title>Loot &amp; Labyrinths</title>
     <style>
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 20px;
+        }
+        #controls {
+          display: grid;
+        }
+        #rules {
+          font-size: 16px;
+        }
+        #rules h2 {
+          font-size: 20px;
+        }
+        .game_board {
+          padding-top: 16px;
+          padding-bottom: 16px;
+        }
+      }
+      @media (min-width: 480px) {
+        h1 {
+          font-size: 40px;
+        }
+        #controls {
+          display: none;
+        }
+        #rules {
+          font-size: 24px;
+        }
+        #rules h2 {
+          font-size: 30px;
+        }
+        .game_board {
+          padding-top: 32px;
+          padding-bottom: 32px;
+        }
+      }
+
       body {
         margin: 0px;
         background-color: #d5d5d5;
@@ -15,8 +53,6 @@
       .game_board {
         text-align: center;
         background-color:gray;
-        padding-top: 32px;
-        padding-bottom: 32px;
       }
       .resource {
         display: none;
@@ -24,28 +60,24 @@
       h1 {
         font-style: italic;
         font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-        font-size: 40px;
         padding-left: 1em;
         color: darkblue;
       }
       .button {
-        height: 64px;
-        width: 256px;
-        margin-top: 32px;
-        margin: 16px;
+        height: 16px;
+        width: 64px;
         background-color: gray;
         touch-action: manipulation;
-        border: 8px outset darkgray;
+        border: 4px outset darkgray;
         border-radius: 20%;
       }
       .button#tool_mode {
-        height: 256px;
-        width: 256px;
-        margin-top: 32px;
+        height: 80px;
+        width: 80px;
         background-color: rgb(139, 8, 63);
         touch-action: manipulation;
         border-radius: 50%;
-        border: 16px outset red;
+        border: 4px outset red;
         grid-column: 1 / 3;
       }
       .button#tool_mode + div {
@@ -55,11 +87,10 @@
         border-style: inset;
       }
 
-      .controls {
-        display: grid;
+      #controls {
         justify-items: center;
         grid-template-columns: 1fr 1fr;
-        font-size: 40px;
+        font-size: 16px;
         font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         color: darkblue;
       }
@@ -68,11 +99,6 @@
         font-family:'Arial Narrow', Arial, sans-serif;
         margin-left: 1em;
         margin-right: 1em;
-        font-size: 36px;
-      }
-
-      #rules h2 {
-        font-size: 40px;
       }
 
     </style>
@@ -82,7 +108,7 @@
         <canvas id="map-canvas"></canvas>
     </div>
     <h1 id="puzzle_name"></h1>
-    <div class="controls">
+    <div id="controls">
         <div id="tool_mode" class="button"></div>
         <div>A</div>
         <div id="undo" class="button"></div>

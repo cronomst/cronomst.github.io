@@ -212,11 +212,14 @@ let Game = function() {
     };
 
     this._drawToolMode = function() {
-        const BPADDING = TILE_SIZE/6;
-        const LPADDING = TILE_SIZE/4;
-        if (this.solved == true) {
+        // Don't draw this if solved or in desktop mode (determined based on whether the mobile controls are displayed. There's probably a nicer way to do this)
+        if (this.solved == true || window.getComputedStyle(document.getElementById('controls'), null).display == 'none') {
             return;
         }
+
+        const BPADDING = TILE_SIZE/6;
+        const LPADDING = TILE_SIZE/4;
+
         ctx.translate(ctx.canvas.width/2 - TILE_SIZE, ctx.canvas.height - TILE_SIZE);
         ctx.fillStyle = COLOR3;
         ctx.fillText('A-', -(TILE_SIZE*1.5) + LPADDING, TILE_SIZE - BPADDING);
