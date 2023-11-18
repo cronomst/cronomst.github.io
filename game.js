@@ -84,15 +84,26 @@ let Game = function() {
             this.touch(touch.clientX, touch.clientY);
             e.preventDefault();
         });
-        document.getElementById('undo').addEventListener('click', (e) => { this.undo(); });
-        document.getElementById('redo').addEventListener('click', (e) => { this.redo(); });
-        document.getElementById('tool_mode').addEventListener('click', (e) => {
-            if (this.toolMode == 0) {
-                this.toolMode = 1;
-            } else {
-                this.toolMode = 0;
+        document.getElementById('undo').addEventListener('mousedown', (e) => { this.undo(); e.target.classList.add('clicked');});
+        document.getElementById('undo').addEventListener('mouseup', (e) => { e.target.classList.remove('clicked');});
+        document.getElementById('undo').addEventListener('touchstart', (e) => { this.undo(); e.target.classList.add('clicked'); e.preventDefault();});
+        document.getElementById('undo').addEventListener('touchend', (e) => { e.target.classList.remove('clicked');});
+        document.getElementById('redo').addEventListener('mousedown', (e) => { this.redo(); e.target.classList.add('clicked');});
+        document.getElementById('redo').addEventListener('mouseup', (e) => { e.target.classList.remove('clicked');});
+        document.getElementById('redo').addEventListener('touchstart', (e) => { this.redo(); e.target.classList.add('clicked'); e.preventDefault();});
+        document.getElementById('redo').addEventListener('touchend', (e) => { e.target.classList.remove('clicked');});
+        document.getElementById('tool_mode').addEventListener('mousedown', (e) => { this._toggleToolMode(); e.target.classList.add('clicked');});
+        document.getElementById('tool_mode').addEventListener('mouseup', (e) => { e.target.classList.remove('clicked');});
+        document.getElementById('tool_mode').addEventListener('touchstart', (e) => { this._toggleToolMode(); e.target.classList.add('clicked'); e.preventDefault(); });
+        document.getElementById('tool_mode').addEventListener('touchend', (e) => { e.target.classList.remove('clicked');});
+
+        document.addEventListener('keydown',  (e) => {
+            var key = e.key.toUpperCase();
+            if (e.ctrlKey && e.shiftKey == false && key == 'Z') {
+                this.undo();
+            } else if (e.ctrlKey && e.shiftKey && key == 'Z') {
+                this.redo();
             }
-            this.render();
         });
 
         // ====
@@ -101,6 +112,15 @@ let Game = function() {
         setInterval(function() {game.render();}, 500);
         // ====
         
+    };
+
+    this._toggleToolMode = function() {
+        if (this.toolMode == 0) {
+            this.toolMode = 1;
+        } else {
+            this.toolMode = 0;
+        }
+        this.render();
     };
 
     this.readDataFromUrl = function() {

@@ -23,33 +23,33 @@
         padding-left: 1em;
         color: darkblue;
       }
-      button {
+      .button {
         height: 64px;
         width: 256px;
         margin-top: 32px;
         margin: 16px;
         background-color: gray;
-        font-size: 64px;
-        border-width: 8px;
         touch-action: manipulation;
+        border: 8px outset darkgray;
         border-radius: 20%;
-        border-color: darkgray;
       }
-      button#tool_mode {
+      .button#tool_mode {
         height: 256px;
         width: 256px;
         margin-top: 32px;
         background-color: rgb(139, 8, 63);
-        font-size: 64px;
-        border-width: 16px;
         touch-action: manipulation;
         border-radius: 50%;
-        border-color: red;
+        border: 16px outset red;
         grid-column: 1 / 3;
       }
-      button#tool_mode + div {
+      .button#tool_mode + div {
         grid-column: 1 / 3;
       }
+      .button.clicked, .button#tool_mode.clicked {
+        border-style: inset;
+      }
+
       .controls {
         display: grid;
         justify-items: center;
@@ -76,10 +76,10 @@
     <canvas id="map-canvas"></canvas>
     <h1 id="puzzle_name"></h1>
     <div class="controls">
-        <button id="tool_mode"></button>
+        <div id="tool_mode" class="button"></div>
         <div>A</div>
-        <button id="undo"></button>
-        <button id="redo"></button>
+        <div id="undo" class="button"></div>
+        <div id="redo" class="button"></div>
         <div>UNDO</div>
         <div>REDO</div>
     </div>
@@ -106,12 +106,14 @@
         <h2>Controls</h2>
         <p>
             With a <b>mouse</b>, place/remove walls by left clicking on a tile.
-            Mark spaces as empty by right clicking on an empty tile.
+            Mark spaces as empty by right clicking on an empty tile. Undo actions
+            with CTRL+Z and redo them with CTRL+SHIFT+Z.
         </p>
         <p>
             Using <b>touch controls</b>, touch a tile to place/remove a wall.
             Press the red "A" button to toggle between placing walls
-            and placing markers.
+            and placing markers. Undo or redo actions with the corresponding UNDO
+            and REDO buttons.
         </p>
     </div>
     <img src="images/tiles.png" class="resource" id="img_tiles"/>
