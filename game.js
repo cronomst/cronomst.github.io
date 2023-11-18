@@ -101,7 +101,8 @@ let Game = function() {
             var key = e.key.toUpperCase();
             if (e.ctrlKey && e.shiftKey == false && key == 'Z') {
                 this.undo();
-            } else if (e.ctrlKey && e.shiftKey && key == 'Z') {
+            } else if ((e.ctrlKey && e.shiftKey && key == 'Z')
+                   || (e.ctrlKey && key == 'Y')) {
                 this.redo();
             }
         });
