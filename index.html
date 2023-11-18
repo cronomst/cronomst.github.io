@@ -11,7 +11,12 @@
       canvas {
         cursor: crosshair;
         image-rendering: pixelated;
-        border-bottom: 16px solid gray;
+      }
+      .game_board {
+        text-align: center;
+        background-color:gray;
+        padding-top: 32px;
+        padding-bottom: 32px;
       }
       .resource {
         display: none;
@@ -73,7 +78,9 @@
     </style>
   </head>
   <body>
-    <canvas id="map-canvas"></canvas>
+    <div class="game_board">
+        <canvas id="map-canvas"></canvas>
+    </div>
     <h1 id="puzzle_name"></h1>
     <div class="controls">
         <div id="tool_mode" class="button"></div>

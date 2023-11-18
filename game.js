@@ -464,6 +464,7 @@ let Game = function() {
 
     this.resize = function() {
         const MAX_CANVAS_WIDTH = 1440;
+        const MAX_CANVAS_HEIGHT = Math.floor(window.innerHeight/2);
         nWidth = TILE_SIZE * (this.puzzle.width+2)
         nHeight = TILE_SIZE * (this.puzzle.height+2);
         cWidth = window.innerWidth;
@@ -487,6 +488,11 @@ let Game = function() {
         if (cWidth > MAX_CANVAS_WIDTH) {
             cWidth = MAX_CANVAS_WIDTH;
             cHeight = Math.floor(cWidth / nativeRatio);
+        }
+
+        if (cHeight > MAX_CANVAS_HEIGHT) {
+            cHeight = MAX_CANVAS_HEIGHT;
+            cWidth = Math.floor(cHeight / nativeRatio);
         }
 
         this.currentWidth = cWidth;
