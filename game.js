@@ -119,7 +119,7 @@ let Game = function() {
     }
 
     this.getTouchPos = function(clientX, clientY) {
-        var ratio = INIT_SIZE / this.currentWidth; // TODO: Only works when map width = height
+        var ratio = (this.puzzle.width + 2) / this.currentWidth;
         var rect = document.getElementById('map-canvas').getBoundingClientRect();
         var mx = clientX - rect.left;
         var my = clientY - rect.top;
@@ -152,12 +152,9 @@ let Game = function() {
         if (this.solved == true) {
             return;
         }
-        var ratio = INIT_SIZE / this.currentWidth; // TODO: Only works when map width = height
-        var rect = document.getElementById('map-canvas').getBoundingClientRect();
-        var mx = clientX - rect.left;
-        var my = clientY - rect.top;
-        var x = Math.floor(mx * ratio) - 1;
-        var y = Math.floor(my * ratio) - 1;
+        var pos = this.getTouchPos(clientX, clientY);
+        var x = pos.x;
+        var y = pos.y;
 
         var currentTile = this.puzzle.getTile(x, y);
 
@@ -176,8 +173,7 @@ let Game = function() {
     }
 
     this.render = function() {
-        //ctx.fillStyle = "rgb(82,122,52)";
-        ctx.fillStyle = "rgb(151,198,117)";
+        ctx.fillStyle = COLOR2;
         ctx.fillRect(0,0,ctx.canvas.width, ctx.canvas.height);
     
         if (this.puzzle != null) {
@@ -289,7 +285,7 @@ let Game = function() {
                 let tf = ctx.getTransform();
                 ctx.translate(x*TILE_SIZE, y*TILE_SIZE);
                 // Draw grid
-                ctx.strokeStyle="rgb(151,198,117)";
+                ctx.strokeStyle=COLOR2;
                 ctx.strokeRect(0.5, 0.5, TILE_SIZE, TILE_SIZE);
                 ctx.setTransform(tf);
             }
@@ -448,10 +444,13 @@ let Game = function() {
 
     this.resize = function() {
         const MAX_CANVAS_WIDTH = 1440;
-        nWidth = TILE_SIZE * INIT_SIZE
-        nHeight = nWidth;
+        nWidth = TILE_SIZE * (this.puzzle.width+2)
+        nHeight = TILE_SIZE * (this.puzzle.height+2);
         cWidth = window.innerWidth;
         cHeight = window.innerHeight;
+
+        ctx.canvas.width = nWidth;
+        ctx.canvas.height = nHeight;
 
         // ratio of the native game size width to height
         const nativeRatio = nWidth / nHeight;
