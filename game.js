@@ -220,17 +220,19 @@ let Game = function() {
 
         const BPADDING = TILE_SIZE/6;
         const LPADDING = TILE_SIZE/4;
+        const TS2 = TILE_SIZE*2;
 
         ctx.translate(ctx.canvas.width/2 - TILE_SIZE, ctx.canvas.height - TILE_SIZE);
         ctx.fillStyle = COLOR3;
         ctx.fillText('A-', -(TILE_SIZE*1.5) + LPADDING, TILE_SIZE - BPADDING);
 
-        ctx.drawImage(document.getElementById('img_mode'), 0, 0, TILE_SIZE*2, TILE_SIZE);
-        ctx.strokeStyle = COLOR3;
+        
         if (this.toolMode == 0) {
-            ctx.strokeRect(2.5, 2.5, TILE_SIZE-3, TILE_SIZE-5);
+            ctx.drawImage(document.getElementById('img_mode'), 0, 0, TS2, TILE_SIZE,
+                                                               0, 0, TS2, TILE_SIZE);
         } else {
-            ctx.strokeRect(TILE_SIZE + 0.5, 2.5, TILE_SIZE-3, TILE_SIZE-5);
+            ctx.drawImage(document.getElementById('img_mode'), TS2, 0, TS2, TILE_SIZE,
+                                                               0, 0, TS2, TILE_SIZE);
         }
         ctx.setTransform();
     };
