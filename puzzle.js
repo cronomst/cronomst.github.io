@@ -73,10 +73,10 @@ let Puzzle = function(map = new Map(8,8)) {
         var max;
         var hints;
         if (isRow) {
-            max = this.height;
+            max = this.width;
             hints = this.rowHints;
         } else {
-            max = this.width;
+            max = this.height;
             hints = this.colHints;
         }
         var target = hints[n];
