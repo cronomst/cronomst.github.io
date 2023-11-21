@@ -223,9 +223,8 @@ let Game = function() {
         const TS2 = TILE_SIZE*2;
 
         ctx.translate(ctx.canvas.width/2 - TILE_SIZE, ctx.canvas.height - TILE_SIZE);
-        ctx.fillStyle = COLOR3;
-        ctx.fillText('A-', -(TILE_SIZE*1.5) + LPADDING, TILE_SIZE - BPADDING);
-
+        // ctx.fillStyle = COLOR3;
+        // ctx.fillText('A-', -(TILE_SIZE*1.5) + LPADDING, TILE_SIZE - BPADDING);
         
         if (this.toolMode == 0) {
             ctx.drawImage(document.getElementById('img_mode'), 0, 0, TS2, TILE_SIZE,
@@ -254,21 +253,28 @@ let Game = function() {
     };
 
     this._drawHint = function(value, status) {
-        const BPADDING = TILE_SIZE/6;
-        const LPADDING = TILE_SIZE/4;
-        const BELOW_COLOR = "rgb(0,0,0)";
-        const EQUAL_COLOR = "rgb(128,128,128)";
-        const ABOVE_COLOR = "rgb(255,0,0)";
-        ctx.font = TILE_SIZE + "px Monospace";
-        if (status < 0) {
-            ctx.fillStyle = BELOW_COLOR;
-        } else if (status == 0) {
-            ctx.fillStyle = EQUAL_COLOR;
-        } else {
-            ctx.fillStyle = ABOVE_COLOR;
+        const NUM_WIDTH = TILE_SIZE/2;
+        const NUM_HEIGHT = TILE_SIZE;
+
+        var style = 0;
+        var ones = value % 10;
+        var tens = Math.floor(value / 10);
+
+        if (status == 0) {
+            style = 1;
+        } else if (status > 0) {
+            style = 2;
         }
-        ctx.fillText(value, LPADDING, TILE_SIZE - BPADDING);
-    }
+        if (tens == 0) {
+            ctx.drawImage(document.getElementById('img_numbermap'), ones * NUM_WIDTH, NUM_HEIGHT * style, NUM_WIDTH, NUM_HEIGHT,
+                                                               NUM_WIDTH/2, 0, NUM_WIDTH, NUM_HEIGHT);
+        } else {
+            ctx.drawImage(document.getElementById('img_numbermap'), tens * NUM_WIDTH, NUM_HEIGHT * style, NUM_WIDTH, NUM_HEIGHT,
+                                                               0, 0, NUM_WIDTH, NUM_HEIGHT);
+            ctx.drawImage(document.getElementById('img_numbermap'), ones * NUM_WIDTH, NUM_HEIGHT * style, NUM_WIDTH, NUM_HEIGHT,
+                                                               NUM_WIDTH, 0, NUM_WIDTH, NUM_HEIGHT);
+        }
+    };
 
     this._drawMap = function() {
         let startx = 0;
