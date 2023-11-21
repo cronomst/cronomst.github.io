@@ -498,7 +498,7 @@ let Game = function() {
 
         if (cHeight > MAX_CANVAS_HEIGHT) {
             cHeight = MAX_CANVAS_HEIGHT;
-            cWidth = Math.floor(cHeight / nativeRatio);
+            cWidth = Math.floor(cHeight * nativeRatio);
         }
 
         this.currentWidth = cWidth;
