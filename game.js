@@ -4,6 +4,9 @@ let Game = function() {
     const TOOL_WALL = 0;
     const TOOL_EMPTY = 1;
     const TOOL_MARKER = 2;
+    const TOOL_UNMARKER = 3;
+    const TOOLMODE_WALL = 0;
+    const TOOLMODE_MARK = 1;
     const MONSTER_TYPES = 4;
     const COLOR2 = "rgb(151,198,117)";
     const COLOR3 = "rgb(82,122,52)";
@@ -49,7 +52,7 @@ let Game = function() {
                 } 
             } else if (e.button == 2) {
                 if (this.puzzle.getMarked(pos.x, pos.y) == true) {
-                    this.selectedTool = TOOL_EMPTY;
+                    this.selectedTool = TOOL_UNMARKER;
                 } else {
                     this.selectedTool = TOOL_MARKER;
                 } 
@@ -151,21 +154,20 @@ let Game = function() {
 
     this.touchStart = function(clientX, clientY) {
         var pos = this.getTouchPos(clientX, clientY);
-        if (this.puzzle.getTile(pos.x, pos.y) == 0) {
-            this.selectedTool = TOOL_EMPTY;
-        } else if (this.puzzle.getMarked(pos.x, pos.y) == true) {
-            if (this.toolMode == 0) {
-                this.selectedTool = TOOL_WALL;
-            } else {
+
+        if (this.toolMode == TOOLMODE_WALL) {
+            if (this.puzzle.getTile(pos.x, pos.y) == 0) {
                 this.selectedTool = TOOL_EMPTY;
-            }
-        } else if (this.puzzle.getTile(pos.x, pos.y) == 1) {
-            if (this.toolMode == 0) {
+            } else if (this.puzzle.getTile(pos.x, pos.y) == 1) {
                 this.selectedTool = TOOL_WALL;
-            } else {
-                this.selectedTool = TOOL_MARKER;
             }
-        } 
+        } else {
+            if (this.puzzle.getMarked(pos.x, pos.y) == false) {
+                this.selectedTool = TOOL_MARKER;
+            } else {
+                this.selectedTool = TOOL_UNMARKER;
+            }
+        }
         this.touch(clientX, clientY);
     };
 
@@ -178,15 +180,17 @@ let Game = function() {
         var y = pos.y;
 
         var currentTile = this.puzzle.getTile(x, y);
+        var isMarked = this.puzzle.getMarked(x, y);
 
         if (this.isDeadEnd(x, y) == false) {
-            if ((this.selectedTool == TOOL_WALL || this.selectedTool == TOOL_EMPTY)
-                    && (currentTile == 0 || currentTile == 1)) {
-                this.puzzle.setTile(x, y, this.selectedTool);
-                this.puzzle.setMarked(x, y, false);
-            } else if (this.selectedTool == TOOL_MARKER && currentTile == 1) {
+            if (this.selectedTool == TOOL_WALL && currentTile == 1 && isMarked == false) {
+                this.puzzle.setTile(x, y, 0);
+            } else if (this.selectedTool == TOOL_EMPTY && currentTile == 0 && isMarked == false) {
                 this.puzzle.setTile(x, y, 1);
+            } else if (this.selectedTool == TOOL_MARKER && currentTile == 1) {
                 this.puzzle.setMarked(x, y, true);
+            } else if (this.selectedTool == TOOL_UNMARKER) {
+                this.puzzle.setMarked(x, y, false);
             }
         }
         this.render();
@@ -223,8 +227,6 @@ let Game = function() {
         const TS2 = TILE_SIZE*2;
 
         ctx.translate(ctx.canvas.width/2 - TILE_SIZE, ctx.canvas.height - TILE_SIZE);
-        // ctx.fillStyle = COLOR3;
-        // ctx.fillText('A-', -(TILE_SIZE*1.5) + LPADDING, TILE_SIZE - BPADDING);
         
         if (this.toolMode == 0) {
             ctx.drawImage(document.getElementById('img_mode'), 0, 0, TS2, TILE_SIZE,
