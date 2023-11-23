@@ -207,10 +207,10 @@ let Game = function() {
             }
             ctx.translate(TILE_SIZE, TILE_SIZE);
             this._drawMap();
-            this._drawDeadEnds();
             if (this.solved == false) {
                 this._drawGrid();
             }
+            this._drawDeadEnds();
             ctx.setTransform();
             this._drawToolMode();
         }
