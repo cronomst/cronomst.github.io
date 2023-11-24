@@ -2,6 +2,7 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
     <title>Loot &amp; Labyrinths Editor</title>
     <style>
       canvas {
@@ -15,12 +16,15 @@
         height: 64px;
         border: 1px solid black;
         cursor: pointer;
+        text-align: center;
+        line-height: 64px;
+        
       }
       #toolbar + div {
         clear: left;
       }
       div#tool_0 {
-        background: black;
+        background: green;
       }
       div#tool_1 {
         background: white;
@@ -28,16 +32,40 @@
       div#tool_2 {
         background: yellow;
       }
+      #toolbar .selected {
+        border: 3px inset red;
+      }
+
+      #options {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: lightgray;
+        padding: 10px;
+        border: 1px solid black;
+      }
+      #options div {
+        padding: 0.5em;
+      }
     </style>
   </head>
   <body>
     <canvas id="map-canvas"></canvas>
     <div id="toolbar">
-        <div id="tool_0"></div>
-        <div id="tool_1"></div>
-        <div id="tool_2"></div>
+        <div id="tool_0" class="selected">Wall</div>
+        <div id="tool_1">Floor</div>
+        <div id="tool_2">Chest</div>
     </div>
     <div id="code"></div>
+    <div id="options">
+        <div>
+            Name: <input id="puzzle_name">
+        </div>
+        <div id="resize">
+            Width: <span id="width_label">8</span> <button id="thinner">-</button><button id="wider">+</button>
+            Height: <span id="height_label">8</span> <button id="shorter">-</button><button id="taller">+</button>
+        </div>
+    </div>
     <div>
         <button id="toggle_walls">Toggle Walls</button>
     </div>

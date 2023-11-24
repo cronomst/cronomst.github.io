@@ -1,21 +1,23 @@
 let App = function() {
     this.map = new Map(8, 8);
-    this.selected = 1;
+    this.selected = 0;
     this.showWalls = true;
     this.drawing = false;
     this.validator = new Validator();
     const TILE_SIZE=64;
     const OFFSET_TOP = TILE_SIZE;
     const OFFSET_LEFT = TILE_SIZE;
+    const MAX_MAP_SIZE = 15;
+    const MIN_MAP_SIZE = 4;
+    const MAP_SIZE_DEFAULT = 8;
 
     this.init = function() {
+        this.createNewPuzzle(MAP_SIZE_DEFAULT, MAP_SIZE_DEFAULT);
+        this.initListeners();
+    };
+
+    this.initListeners = function() {
         const canvas = document.getElementById("map-canvas");
-        canvas.width = TILE_SIZE * (this.map.width + 1);
-        canvas.height = TILE_SIZE * (this.map.height + 1);
-        this.clearMap();
-        //this.decode("14051041555540014555454146455004");
-        this.validate();
-        
         canvas.addEventListener("mousedown", (e) => {
             var x = Math.floor((e.offsetX - OFFSET_LEFT) / TILE_SIZE);
             var y = Math.floor((e.offsetY - OFFSET_TOP) / TILE_SIZE);
@@ -33,15 +35,59 @@ let App = function() {
             }
         });
 
-        document.getElementById("tool_0").addEventListener("click", (e) => { this.selected = 0; });
-        document.getElementById("tool_1").addEventListener("click", (e) => { this.selected = 1; });
-        document.getElementById("tool_2").addEventListener("click", (e) => { this.selected = 2; });
+        document.getElementById("tool_0").addEventListener("click", (e) => { this.selectTool(0); });
+        document.getElementById("tool_1").addEventListener("click", (e) => { this.selectTool(1); });
+        document.getElementById("tool_2").addEventListener("click", (e) => { this.selectTool(2); });
 
         document.getElementById("toggle_walls").addEventListener("click", (e) => {
             this.showWalls = !this.showWalls;
             this.draw();
-        })
+        });
+
+        document.getElementById("puzzle_name").addEventListener("change", (e) => { this.encode(); });
+        
+        document.getElementById("wider").addEventListener("click", (e) => {this.changeSize(1, 0)});
+        document.getElementById("thinner").addEventListener("click", (e) => {this.changeSize(-1, 0)});
+        document.getElementById("taller").addEventListener("click", (e) => {this.changeSize(0, 1)});
+        document.getElementById("shorter").addEventListener("click", (e) => {this.changeSize(0, -1)});
+    }
+
+    this.selectTool = function(tool) {
+        document.getElementById(`tool_${this.selected}`).classList.remove('selected');
+        this.selected = tool;
+        document.getElementById(`tool_${this.selected}`).classList.add('selected');
+    }
+
+    this.changeSize = function(dw, dh) {
+        var newWidth = this.map.width + dw;
+        var newHeight = this.map.height + dh;
+
+        this.createNewPuzzle(newWidth, newHeight);
+        document.getElementById('width_label').innerHTML = this.map.width;
+        document.getElementById('height_label').innerHTML = this.map.height;
     };
+
+    this.createNewPuzzle = function(width, height) {
+        const canvas = document.getElementById("map-canvas");
+        if (width > MAX_MAP_SIZE) { 
+            width = MAX_MAP_SIZE;
+        }
+        if (width < MIN_MAP_SIZE) {
+            width = MIN_MAP_SIZE;
+        }
+        if (height > MAX_MAP_SIZE) {
+            height = MAX_MAP_SIZE;
+        }
+        if (height < MIN_MAP_SIZE) {
+            height = MIN_MAP_SIZE;
+        }
+        this.map = new Map(width, height);
+        canvas.width = TILE_SIZE * (this.map.width + 1);
+        canvas.height = TILE_SIZE * (this.map.height + 1);
+        this.clearMap();
+        this.validate();
+        this.draw();
+    }
 
     this.clearMap = function() {
         this.map.clear();
@@ -98,7 +144,7 @@ let App = function() {
         for (let x=0; x<this.map.width; x++) {
             for (let y=0; y<this.map.height; y++) {
                 let tile = this.map.getTile(x,y);
-                let style = "rgb(0,0,0)";
+                let style = "rgb(0,128,0)";
                 if (tile == 0 && this.showWalls == false) {
                     style = "rgb(255,255,255)";
                 } else if (tile == 1) {
@@ -111,7 +157,7 @@ let App = function() {
                                 TILE_SIZE, TILE_SIZE);
                 // Draw grid
                 ctx.beginPath();
-                ctx.strokeStyle="rgb(128,128,128)";
+                ctx.strokeStyle="rgb(0,0,0)";
                 ctx.rect(x*TILE_SIZE + OFFSET_LEFT, y*TILE_SIZE + OFFSET_TOP,
                     TILE_SIZE, TILE_SIZE);
                 ctx.stroke();
@@ -137,8 +183,14 @@ let App = function() {
 
     this.encode = function() {
         var puzzleCode = this.map.encodePuzzle();
+        var puzzleName = document.getElementById("puzzle_name").value;
+        var puzzleNameParam = '';
+        if (puzzleName != '') {
+            puzzleNameParam = '&name=' + encodeURIComponent(puzzleName);
+        }
+        var puzzleUrl = `https://cronomst.github.io/?puzzle=${puzzleCode}${puzzleNameParam}`
         document.getElementById("code").innerHTML = "<p>" +  this.map.encodeSolution() + "</p>" +
-                `<p><a href="https://cronomst.github.io/?puzzle=${puzzleCode}">${puzzleCode}</a></p>`;
+                `<p><a href="${puzzleUrl}">${puzzleUrl}</a></p>`;
     };
 
     this.validate = function() {
