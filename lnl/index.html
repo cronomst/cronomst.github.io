@@ -1,54 +1,165 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en-US">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Loot &amp; Labryinths - Puzzles</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="theme-color" content="#808080" >
+    <title>Loot &amp; Labyrinths</title>
     <style>
-        @media (max-width: 480px) {
-            h1::before {
-                content: url("../images/logo32.png");
-            }
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 20px;
         }
-        @media (min-width: 480px) {
-            h1::before {
-                content: url("../images/logo64.png");
-            }
+        #controls {
+          display: grid;
         }
+        #rules {
+          font-size: 16px;
+        }
+        #rules h2 {
+          font-size: 20px;
+        }
+        .game_board {
+          padding-top: 16px;
+          padding-bottom: 16px;
+        }
+      }
+      @media (min-width: 480px) {
+        h1 {
+          font-size: 40px;
+        }
+        #controls {
+          display: none;
+        }
+        #rules {
+          font-size: 24px;
+        }
+        #rules h2 {
+          font-size: 30px;
+        }
+        .game_board {
+          padding-top: 32px;
+          padding-bottom: 32px;
+        }
+      }
+
+      body {
+        margin: 0px;
+        background-color: #d5d5d5;
+      }
+      canvas {
+        cursor: crosshair;
+        image-rendering: pixelated;
+      }
+      .game_board {
+        text-align: center;
+        background-color:gray;
+      }
+      .resource {
+        display: none;
+      }
+      h1 {
+        font-style: italic;
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        padding-left: 1em;
+        color: darkblue;
+      }
+      .button {
+        height: 16px;
+        width: 64px;
+        background-color: gray;
+        touch-action: manipulation;
+        border: 4px outset darkgray;
+        border-radius: 20%;
+      }
+      .button#tool_mode {
+        height: 80px;
+        width: 80px;
+        background-color: rgb(139, 8, 63);
+        touch-action: manipulation;
+        border-radius: 50%;
+        border: 4px outset red;
+        grid-column: 1 / 3;
+      }
+      .button#tool_mode + div {
+        grid-column: 1 / 3;
+      }
+      .button.clicked, .button#tool_mode.clicked {
+        border-style: inset;
+      }
+
+      #controls {
+        justify-items: center;
+        grid-template-columns: 1fr 1fr;
+        font-size: 16px;
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        color: darkblue;
+      }
+
+      #rules {
+        font-family:'Arial Narrow', Arial, sans-serif;
+        margin-left: 1em;
+        margin-right: 1em;
+      }
+
     </style>
   </head>
   <body>
-    <div class="container">
-        <h1 class="display-1">Loot &amp; Labryinths</h1>
-        <h2>Tutorial Puzzles</h2>
-        <div class="list-group">
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C23332.R50305.M.T.&name=Rows+and+Columns">Rows and Columns</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C55144.R24445.M230400.T.&name=Monsters+and+Dead+Ends">Monsters and Dead Ends</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C13111.R04102.M400.T44.&name=Treasure+Room">Treasure Room</a>
-        </div>
-        <h2>Easy</h2>
-        <div class="list-group">
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C56612166.R60507555.M302502712732.T35.&name=Under+the+Gaze+of+the+Watchers">Under the Gaze of the Watchers</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C45406455.R47433453.M003263633.T.&name=The+Deceitful+Hoard">The Deceitful Hoard</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C111302020222021.R4861.Me00e30.T21.&name=The+Grand+Hall">The Grand Hall</a>
-        </div>
-        <h2>Moderate</h2>
-        <div class="list-group">
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C23253341.R14151641.M040060250400460.T11.&name=The+Gauntlet+of+Bones">The Gauntlet of Bones</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C15316435.R54224434.M031051120231251411.T53.&name=Spooky+Corridors">Spooky Corridors</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C13153333.R51343312.M611721.T2175.&name=Phantom+Chase">Phantom Chase</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C34442514.R47523231.M304324733.T03.&name=The+Thief%27s+Sorrow">The Thief's Sorrow</a>
-        </div>
-        <h2>Challenging</h2>
-        <div class="list-group">
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C15053345.R34351424.M610.T.&name=Lonely+Loops">Lonely Loops</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C52326134.R25334414.M012062372722.T13.&name=Watchers+of+the+Loot">Watchers of the Loot</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C7625668364.R7322996645.M160220360570760970.T82.&name=Throne+Room+of+the+Lich">Throne Room of the Lich</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C6445446.R5543222532.M044204340364404644.T.&name=A+Dark+Summoning">A Dark Summoning</a>
-            <a class="list-group-item list-group-item-action" href="https://cronomst.github.io/?puzzle=C46379152.R154234423432.M0020840a4463702.T3369.&name=The+Sinister+Caverns">The Sinister Caverns</a>
-        </div>
+    <div class="game_board">
+        <canvas id="map-canvas"></canvas>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <h1 id="puzzle_name"></h1>
+    <div id="controls">
+        <div id="tool_mode" class="button"></div>
+        <div>A</div>
+        <div id="undo" class="button"></div>
+        <div id="redo" class="button"></div>
+        <div>UNDO</div>
+        <div>REDO</div>
+    </div>
+    <div id="rules">
+        <h2>Objective</h2>
+        <p>
+            Place walls on the grid to construct a map of a labryinth
+            that follows the rules described below. You may also place
+            a marker to indicate empty spaces, but this is just to aid
+            in solving the puzzle. Empty spaces need not be marked for
+            the puzzle to be solved.
+        </p>
+        <h2>Rules</h2>
+        <p>
+            <ul>
+                <li>The numbers along the top and side indicate the total number of walls for that row or column.</li>
+                <li>All tiles that are not walls are either part of a hallway or treasure room</li>
+                <li>Treasure rooms contain a treasure chest and are always 3x3 tiles square with exactly one exit. The treasure can be on any tile in the treasure room, but a treasure room will always have exactly one chest.</li>
+                <li>Hallways are always exactly one tile wide. So, outside of treasure rooms, there are no 2x2 blocks of empty tiles.</li>
+                <li>Every dead end contains a monster and every monster is a dead end (surrounded by walls or the edge of the map on 3 sides in the cardinal directions).</li>
+                <li>All hallways and rooms on the map are connected.</li>
+            </ul>
+        </p>
+        <h2>Controls</h2>
+        <p>
+            With a <b>mouse</b>, place/remove walls by left clicking on a tile.
+            Mark spaces as empty by right clicking on an empty tile. Undo actions
+            with CTRL+Z and redo them with CTRL+Y or CTRL+SHIFT+Z.
+        </p>
+        <p>
+            Using <b>touch controls</b>, touch a tile to place/remove a wall.
+            Press the red "A" button to toggle between placing walls
+            and placing markers. Undo or redo actions with the corresponding UNDO
+            and REDO buttons.
+        </p>
+    </div>
+    <img src="images/treasure.png" class="resource" id="img_treasure"/>
+    <img src="images/tiles.png" class="resource" id="img_tiles"/>
+    <img src="images/wallmap.png" class="resource" id="img_wallmap"/>
+    <img src="images/marker.png" class="resource" id="img_marker"/>
+    <img src="images/monsters.png" class="resource" id="img_monster"/>
+    <img src="images/mode.png" class="resource" id="img_mode"/>
+    <img src="images/numbers.png" class="resource" id="img_numbermap"/>
   </body>
+  <script src="map.js"></script>
+  <script src="puzzle.js"></script>
+  <script src="validator.js"></script>
+  <script src="game.js"></script>
 </html>
