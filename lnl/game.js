@@ -319,8 +319,7 @@ let Game = function() {
                 let tf = ctx.getTransform();
                 ctx.translate(x*TILE_SIZE, y*TILE_SIZE);
                 // Draw grid
-                ctx.strokeStyle=COLOR2;
-                ctx.strokeRect(0.5, 0.5, TILE_SIZE, TILE_SIZE);
+                ctx.drawImage(document.getElementById('img_grid'), 0, 0, TILE_SIZE, TILE_SIZE);
                 ctx.setTransform(tf);
             }
         }
