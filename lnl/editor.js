@@ -50,6 +50,13 @@ let App = function() {
         document.getElementById("thinner").addEventListener("click", (e) => {this.changeSize(-1, 0)});
         document.getElementById("taller").addEventListener("click", (e) => {this.changeSize(0, 1)});
         document.getElementById("shorter").addEventListener("click", (e) => {this.changeSize(0, -1)});
+
+        document.getElementById("decode").addEventListener("click", (e) => {
+            this.decode(document.getElementById("solution_code").value);
+            this.draw();
+            this.encode();
+            this.validate();
+        });
     }
 
     this.selectTool = function(tool) {
@@ -178,19 +185,24 @@ let App = function() {
     }
 
     this.decode = function(mapCode) {
-        this.map.decodeSolution(mapCode)
+        this.map.decodeSolution(mapCode);
+        document.getElementById('width_label').innerHTML = this.map.width;
+        document.getElementById('height_label').innerHTML = this.map.height;
+        var canvas = document.getElementById('map-canvas');
+        canvas.width = TILE_SIZE * (this.map.width + 1);
+        canvas.height = TILE_SIZE * (this.map.height + 1);
     };
 
     this.encode = function() {
         var puzzleCode = this.map.encodePuzzle();
         var puzzleName = document.getElementById("puzzle_name").value;
         var puzzleNameParam = '';
-        if (puzzleName != '') {
+        if (puzzleName) {
             puzzleNameParam = '&name=' + encodeURIComponent(puzzleName);
         }
-        var puzzleUrl = `https://cronomst.github.io/?puzzle=${puzzleCode}${puzzleNameParam}`
-        document.getElementById("code").innerHTML = "<p>" +  this.map.encodeSolution() + "</p>" +
-                `<p><a href="${puzzleUrl}">${puzzleUrl}</a></p>`;
+        var puzzleUrl = `https://cronomst.github.io/lnl/?puzzle=${puzzleCode}${puzzleNameParam}`
+        document.getElementById("code").innerHTML = `<p><a href="${puzzleUrl}">${puzzleUrl}</a></p>`;
+        document.getElementById('solution_code').value = this.map.encodeSolution();
     };
 
     this.validate = function() {

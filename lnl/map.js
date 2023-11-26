@@ -26,7 +26,11 @@ let Map = function(w, h) {
     }
 
     this.decodeSolution = function(mapCode) {
-        //14051041555540014555454146455004
+        //8814051041555540014555454146455004
+        this.width = parseInt(mapCode.substr(0,1), 16);
+        this.height = parseInt(mapCode.substr(1,1), 16);
+        this.clear();
+        mapCode = mapCode.slice(2);
         for (var i=0; i<mapCode.length; i++) {
             var parts = parseInt(mapCode.substr(i, 1), 16);
             var part1 = parts >> 2;
@@ -37,7 +41,7 @@ let Map = function(w, h) {
     };
 
     this.encodeSolution = function() {
-        var out = '';
+        var out = this.width.toString(16) + this.height.toString(16);
         var tcount = this.width * this.height;
         for (var i=0; i<tcount; i+=2) {
             var part = this.tiles[i] << 2 | this.tiles[i+1];
